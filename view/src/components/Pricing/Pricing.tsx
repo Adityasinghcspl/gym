@@ -47,7 +47,7 @@ export default function Pricing() {
         {/* Section Title */}
         <div className="text-center mb-12">
           <span className="text-lg font-semibold text-orange-500 uppercase">Our Plan</span>
-          <h2 className="text-4xl font-extrabold mt-3 text-white">Choose your pricing plan</h2>
+          <h2 className="text-4xl font-extrabold mt-3 text-white uppercase">Choose your pricing plan</h2>
         </div>
         {/* Pricing Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">

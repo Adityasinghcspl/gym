@@ -30,15 +30,15 @@ export default function SiteHeader(props: {
           <Link to="/about-us" className={`hover:text-orange-500 ${pathname === '/about-us' && 'text-orange-500'}`}>
             About Us
           </Link>
-          <a href="./class-details.html" className="hover:text-orange-500">
+          <Link to="./class-details.html" className="hover:text-orange-500">
             Classes
-          </a>
-          <a href="./services.html" className="hover:text-orange-500">
+          </Link>
+          <Link to="./services" className={`hover:text-orange-500 ${pathname === '/services' && 'text-orange-500'}`}>
             Services
-          </a>
-          <a href="./team.html" className="hover:text-orange-500">
+          </Link>
+          <Link to="./team.html" className="hover:text-orange-500">
             Our Team
-          </a>
+          </Link>
           <div className="relative group">
             <button className="hover:text-orange-500">Pages</button>
             <div className="absolute left-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white w-44 p-3 rounded-lg">

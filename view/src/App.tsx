@@ -18,6 +18,7 @@ import DefaultLayout from './layout/DefaultLayout';
 import Home from './pages/Home/Home';
 import DefaultSiteLayout from './layout/DefaultSiteLayout';
 import About from './pages/About/About';
+import Service from './pages/Service/Services';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,6 +52,16 @@ function App() {
             <>
               <PageTitle title="About US" />
               <About />
+            </>
+          }
+        />
+        <Route
+          index
+          path="/services"
+          element={
+            <>
+              <PageTitle title="Services" />
+              <Service />
             </>
           }
         />
