@@ -36,7 +36,7 @@ export default function SiteHeader(props: {
           <Link to="./services" className={`hover:text-orange-500 ${pathname === '/services' && 'text-orange-500'}`}>
             Services
           </Link>
-          <Link to="./team.html" className="hover:text-orange-500">
+          <Link to="./our-team" className={`hover:text-orange-500 ${pathname === '/our-team' && 'text-orange-500'}`}>
             Our Team
           </Link>
           <div className="relative group">
