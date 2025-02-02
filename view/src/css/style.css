@@ -360,3 +360,29 @@ span.flatpickr-weekday,
   color: #ffffff;
   font-size: 16px;
 }
+
+/*---------------------
+  Testimonial Section
+-----------------------*/
+
+.swiper-button-next,
+.swiper-button-prev {
+  width: 50px; /* Adjust the size as needed */
+  height: 50px; /* Adjust the size as needed */
+  background-color: #f97316; /* bg-orange-500 */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Arrow color */
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: #ea580c; /* Darker orange for hover effect */
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 20px; /* Adjust the arrow size as needed */
+}

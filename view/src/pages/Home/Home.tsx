@@ -30,7 +30,7 @@ const Home = () => {
         <AnimatePresence>
           <motion.div
             key={currentIndex}
-            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            className="absolute inset-0 w-full h-full bg-cover"
             style={{ backgroundImage: `url(${images[currentIndex]})` }}
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
