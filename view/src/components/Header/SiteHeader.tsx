@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaYoutube, FaInstagram, FaBars } from 'react-icons/fa';
 
-export default function SiteHeader(props: {
+export default function SiteHeader(_props: {
   activeBarOpen: string | boolean | undefined;
   setActiveBararOpen: (arg0: boolean) => void;
 }) {
@@ -40,11 +40,8 @@ export default function SiteHeader(props: {
             Our Team
           </Link>
           <div className="relative group">
-            <button className="hover:text-orange-500">Pages</button>
+            <button className="hover:text-orange-500 uppercase">Pages</button>
             <div className="absolute left-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white w-44 p-3 rounded-lg">
-              <a href="./about-us.html" className="block py-1 hover:text-orange-500">
-                About us
-              </a>
               <a href="./class-timetable.html" className="block py-1 hover:text-orange-500">
                 Classes timetable
               </a>
@@ -62,9 +59,9 @@ export default function SiteHeader(props: {
               </a>
             </div>
           </div>
-          <a href="./contact.html" className="hover:text-orange-500">
+          <Link to="./contact-us" className={`hover:text-orange-500 ${pathname === '/contact-us' && 'text-orange-500'}`}>
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Search and Social Icons */}
