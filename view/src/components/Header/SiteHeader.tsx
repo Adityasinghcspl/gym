@@ -30,9 +30,9 @@ export default function SiteHeader(_props: {
           <Link to="/about-us" className={`hover:text-orange-500 ${pathname === '/about-us' && 'text-orange-500'}`}>
             About Us
           </Link>
-          <Link to="./class-details.html" className="hover:text-orange-500">
+          {/* <Link to="./class-details.html" className="hover:text-orange-500">
             Classes
-          </Link>
+          </Link> */}
           <Link to="./services" className={`hover:text-orange-500 ${pathname === '/services' && 'text-orange-500'}`}>
             Services
           </Link>
