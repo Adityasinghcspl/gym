@@ -7,7 +7,7 @@ import Trainer from '../models/trainerModel.js';
 //@access public
 const registerTrainer = async (req, res) => {
   try {
-    const { name, email, phone_no, password, address } = req.body;
+    const { name, email, phone_no, password } = req.body;
     // Check for missing fields
     const missingFields = [];
     if (!name) missingFields.push("name");
@@ -27,8 +27,8 @@ const registerTrainer = async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const trainer = await trainer.create({ name, email, phone_no, address, password: hashedPassword });
-    res.status(201).json(trainer);
+    await Trainer.create({ name, email, phone_no, password: hashedPassword });
+    res.status(201).json({ message: 'Trainer registered successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message || "An error occurred during registration" });
   }
