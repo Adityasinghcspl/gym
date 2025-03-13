@@ -1,5 +1,5 @@
 import DefaultLayout from '../layout/DefaultLayout';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import PageTitle from '../components/PageTitle';
 import ECommerce from '../pages/Dashboard/ECommerce';
 import Calendar from '../pages/Calendar';
@@ -12,14 +12,56 @@ import Alerts from '../pages/UiElements/Alerts';
 import Buttons from '../pages/UiElements/Buttons';
 import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
+import { useEffect, useState } from 'react';
 
 export default function DashboardRoutes() {
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(!!localStorage.getItem('accessToken'));
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setIsAuthorized(!!localStorage.getItem('accessToken'));
+    };
+
+    window.addEventListener('storage', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleAuthChange);
+    };
+  }, []);
+
+  console.log(isAuthorized, 'localStorage.getItem', localStorage.getItem('accessToken'));
+  if (!isAuthorized) {
+    return (
+      <Routes>
+        <Route
+          path="/auth/signin"
+          element={
+            <>
+              <PageTitle title="Sign In" />
+              <SignIn />
+            </>
+          }
+        />
+        <Route
+          path="/auth/signup"
+          element={
+            <>
+              <PageTitle title="Sign Up" />
+              <SignUp />
+            </>
+          }
+        />
+        <Route path="*" element={<Navigate to="/auth/signin" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <>
       <DefaultLayout>
         <Routes>
           <Route
-            index
+            path="/"
             element={
               <>
                 <PageTitle title="Gym Admin Dashboard" />
@@ -98,25 +140,8 @@ export default function DashboardRoutes() {
                 <Buttons />
               </>
             }
-          />
-          <Route
-            path="/auth/signin"
-            element={
-              <>
-                <PageTitle title="Signin | Admin Dashboard" />
-                <SignIn />
-              </>
-            }
-          />
-          <Route
-            path="/auth/signup"
-            element={
-              <>
-                <PageTitle title="Signup | Admin Dashboard" />
-                <SignUp />
-              </>
-            }
-          />
+          />  
+          <Route path="/auth/*" element={<Navigate to="/" replace />} />
         </Routes>
       </DefaultLayout>
     </>

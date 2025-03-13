@@ -1,26 +1,37 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import LogoDark from '../../images/logo/logo-dark.svg';
-import Logo from '../../images/logo/logo.svg';
-import { MdOutlineMail, MdOutlineLock } from 'react-icons/md';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+// import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import LogoDark from '../../images/logo/logo.png';
+import Logo from '../../images/logo/logo.png';
+import { MdOutlineMail, MdVisibilityOff, MdVisibility } from 'react-icons/md';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { SignInTrainerForm } from '../../types/type';
+import { AccessToken, SignInTrainerForm } from '../../types/type';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { signInTrainer } from '../../redux/features/auth/authSlice';
 
 const SignIn: React.FC = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInTrainerForm>();
 
-  const onSubmit: SubmitHandler<SignInTrainerForm> = (data) => {
-    console.log(data);
-    dispatch(signInTrainer(data));
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const onSubmit: SubmitHandler<SignInTrainerForm> = async (data) => {
+    const result = await dispatch(signInTrainer(data));
+    const payload = result.payload as AccessToken;
+    if (payload.accessToken) {
+      localStorage.setItem('accessToken', payload.accessToken);
+      window.dispatchEvent(new Event('storage'));
+      navigate('/'); // Redirect on success
+    }
   };
   return (
     <>
@@ -31,8 +42,10 @@ const SignIn: React.FC = () => {
           <div className="hidden w-full md:block md:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-                <img className="hidden dark:block" src={Logo} alt="Logo" />
-                <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                <div className="bg-boxdark p-2 rounded-lg">
+                  <img className="hidden dark:block" src={Logo} alt="Logo" />
+                  <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                </div>
               </Link>
 
               <p className="2xl:px-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit suspendisse.</p>
@@ -181,7 +194,7 @@ const SignIn: React.FC = () => {
                   <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
                   <div className="relative">
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
                       className={`w-full rounded-lg border bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
                         errors.password ? 'border-red-500' : 'border-stroke'
@@ -200,8 +213,12 @@ const SignIn: React.FC = () => {
                       })}
                     />
                     {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-                    <span className="absolute right-4 top-3">
-                      <MdOutlineLock size={22} color="#B3B3B3" />
+                    <span className="absolute right-4 top-3 cursor-pointer" onClick={togglePasswordVisibility}>
+                      {showPassword ? (
+                        <MdVisibilityOff size={22} color="#B3B3B3" />
+                      ) : (
+                        <MdVisibility size={22} color="#B3B3B3" />
+                      )}
                     </span>
                   </div>
                 </div>

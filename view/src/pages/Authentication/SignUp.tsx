@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 // import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import LogoDark from '../../images/logo/logo-dark.svg';
-import Logo from '../../images/logo/logo.svg';
+import LogoDark from '../../images/logo/logo.png';
+import Logo from '../../images/logo/logo.png';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { SignUpTrainerForm } from '../../types/type';
 import { FiUser } from 'react-icons/fi';
-import { MdOutlineMail, MdOutlinePhone, MdOutlineLock } from 'react-icons/md';
+import { MdOutlineMail, MdOutlinePhone, MdVisibilityOff, MdVisibility } from 'react-icons/md';
 
 const SignUp: React.FC = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -24,10 +27,13 @@ const SignUp: React.FC = () => {
     }
   }, [password, clearErrors]);
 
-  const onSubmit: SubmitHandler<SignUpTrainerForm> = (data) =>{
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
+
+  const onSubmit: SubmitHandler<SignUpTrainerForm> = (data) => {
     console.log(data);
-  }
-  
+  };
+
   return (
     <>
       {/* <Breadcrumb pageName="Sign Up" /> */}
@@ -37,8 +43,10 @@ const SignUp: React.FC = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-                <img className="hidden dark:block" src={Logo} alt="Logo" />
-                <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                <div className="bg-gray-800 dark:block p-2 rounded-lg">
+                  <img className="hidden dark:block" src={Logo} alt="Logo" />
+                  <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                </div>
               </Link>
               <p className="2xl:px-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit suspendisse.</p>
 
@@ -165,7 +173,9 @@ const SignUp: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Enter your full name"
-                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.name ? "border-red-500" : "border-stroke"}`}
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.name ? 'border-red-500' : 'border-stroke'
+                      }`}
                       {...register('name', {
                         required: 'Name is required',
                         minLength: {
@@ -191,7 +201,9 @@ const SignUp: React.FC = () => {
                     <input
                       type="email"
                       placeholder="Enter your email"
-                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.email ? "border-red-500" : "border-stroke"}`}
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.email ? 'border-red-500' : 'border-stroke'
+                      }`}
                       {...register('email', {
                         required: 'Email is required',
                         pattern: {
@@ -213,7 +225,9 @@ const SignUp: React.FC = () => {
                     <input
                       type="phone_no"
                       placeholder="Enter your phone number"
-                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.phone_no ? "border-red-500" : "border-stroke"}`}
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.phone_no ? 'border-red-500' : 'border-stroke'
+                      }`}
                       {...register('phone_no', {
                         required: 'Phone number is required',
                         pattern: {
@@ -241,9 +255,11 @@ const SignUp: React.FC = () => {
                   <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
                   <div className="relative">
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
-                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.password ? "border-red-500" : "border-stroke"}`}
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.password ? 'border-red-500' : 'border-stroke'
+                      }`}
                       {...register('password', {
                         required: 'Password is required',
                         minLength: {
@@ -258,8 +274,12 @@ const SignUp: React.FC = () => {
                       })}
                     />
                     {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-                    <span className="absolute right-4 top-3">
-                      <MdOutlineLock size={22} color="#B3B3B3" />
+                    <span className="absolute right-4 top-3 cursor-pointer" onClick={togglePasswordVisibility}>
+                      {showPassword ? (
+                        <MdVisibilityOff size={22} color="#B3B3B3" />
+                      ) : (
+                        <MdVisibility size={22} color="#B3B3B3" />
+                      )}
                     </span>
                   </div>
                 </div>
@@ -268,9 +288,11 @@ const SignUp: React.FC = () => {
                   <label className="mb-2.5 block font-medium text-black dark:text-white">Re-type Password</label>
                   <div className="relative">
                     <input
-                      type="password"
+                      type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Re-enter your password"
-                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${errors.retype_password ? "border-red-500" : "border-stroke"}`}
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.retype_password ? 'border-red-500' : 'border-stroke'
+                      }`}
                       {...register('retype_password', {
                         required: 'Please retype your password',
                         validate: (value) => value === password || 'Passwords do not match',
@@ -278,8 +300,12 @@ const SignUp: React.FC = () => {
                     />
                     {errors.retype_password && <p className="text-red-500">{errors.retype_password.message}</p>}
 
-                    <span className="absolute right-4 top-3">
-                      <MdOutlineLock size={22} color="#B3B3B3" />
+                    <span className="absolute right-4 top-3 cursor-pointer" onClick={toggleConfirmPasswordVisibility}>
+                      {showConfirmPassword ? (
+                        <MdVisibilityOff size={22} color="#B3B3B3" />
+                      ) : (
+                        <MdVisibility size={22} color="#B3B3B3" />
+                      )}
                     </span>
                   </div>
                 </div>
