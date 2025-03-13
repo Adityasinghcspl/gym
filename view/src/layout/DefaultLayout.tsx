@@ -15,12 +15,12 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
       {/* ===== Page Wrapper Start ===== */}
       <div className="flex h-screen overflow-hidden">
         {/* Show Sidebar only if not on an auth page */}
-        {!isAuthPage && <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />}
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* ===== Content Area Start ===== */}
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
           {/* Show Header only if not on an auth page */}
-          {!isAuthPage && <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />}
+         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
           {/* ===== Main Content Start ===== */}
           <main>
