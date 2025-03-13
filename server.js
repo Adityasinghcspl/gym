@@ -18,6 +18,11 @@ const port = process.env.PORT || 5000;
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 app.use(cors());
+// Middleware to log the endpoint of each request
+app.use((req, res, next) => {
+  console.log(req.originalUrl);
+  next();
+});
 // Set up Swagger UI for API documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Define the user routes
