@@ -27,7 +27,7 @@ const registerTrainer = async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Trainer.create({ name, email, phone_no, password: hashedPassword });
+    await Trainer.create({ name, email, phone_no, password: hashedPassword, role: 'trainer' });
     res.status(201).json({ message: 'Trainer registered successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message || "An error occurred during registration" });
@@ -40,7 +40,9 @@ const registerTrainer = async (req, res) => {
 const getAllTrainers = async (req, res) => {
   try {
     // Fetch all trainers and sort by name
-    const trainers = await Trainer.find().sort({ name: 1 });
+    const trainers = await Trainer.find()
+      .sort({ name: 1 })
+      .select('_id name email phone_no createdAt updatedAt');
     res.status(200).json(trainers);
   } catch (err) {
     // Handle any errors that occur during the database operation
@@ -50,7 +52,7 @@ const getAllTrainers = async (req, res) => {
 
 //@desc Get single trainer
 //@route POST /api/trainers/:id
-//@access public
+//@access private
 const getTrainer = async (req, res) => {
   const { id } = req.params;
   // Validate the provided id
@@ -75,6 +77,33 @@ const getTrainer = async (req, res) => {
   }
 }
 
+//@desc delete single trainer
+//@route Delete /api/trainer/:id
+//@access private
+const deleteTrainer = async (req, res) => {
+  const { id } = req.params;
+  // Validate the provided id
+  if (!id) {
+    return res.status(400).json({ message: "trainer ID is required" });
+  }
+  try {
+    // Find and delete the trainer by ID
+    const trainer = await Trainer.findByIdAndDelete(id).exec();
+    if (!trainer) {
+      return res.status(404).json({ message: "Trainer not found" });
+    }
+    // Return success response
+    return res.status(200).json({ message: "Trainer deleted successfully", trainer });
+  } catch (error) {
+    // Handle invalid MongoDB ObjectID or other errors
+    if (error.name === "CastError" && error.kind === "ObjectId") {
+      return res.status(400).json({ message: "Invalid trainer ID format" });
+    }
+    // Handle other errors
+    return res.status(500).json({ message: "An error occurred while deleting the trainer." });
+  }
+}
+
 
 //@desc Login trainer
 //@route POST /api/trainers/login
@@ -93,12 +122,10 @@ const loginTrainer = async (req, res) => {
     if (trainer && (await bcrypt.compare(password, trainer.password))) {
       const accessToken = jwt.sign(
         {
-          trainer: {
-            trainername: trainer.trainername,
-            email: trainer.email,
-            id: trainer._id,
-            role: 'trainer'
-          },
+          name: trainer.name,
+          email: trainer.email,
+          id: trainer._id,
+          role: trainer.role
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1d" }
@@ -125,4 +152,4 @@ const currentTrainer = async (req, res) => {
   }
 }
 
-export { registerTrainer, loginTrainer, currentTrainer, getTrainer, getAllTrainers };
+export { registerTrainer, loginTrainer, currentTrainer, getTrainer, getAllTrainers, deleteTrainer };

@@ -18,6 +18,10 @@ const trainerSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, "Please add the trainer password"],
+    },
+    role: {
+      type: String,
+      required: [true, "Please set the role"]
     }
   },
   {
@@ -25,5 +29,5 @@ const trainerSchema = mongoose.Schema(
   }
 );
 
-const Trainer = mongoose.model('Trainer', trainerSchema); 
+const Trainer = mongoose.model('Trainer', trainerSchema);
 export default Trainer;
