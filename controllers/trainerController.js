@@ -7,7 +7,7 @@ import Trainer from '../models/trainerModel.js';
 //@access public
 const registerTrainer = async (req, res) => {
   try {
-    const { name, email, phone_no, password } = req.body;
+    const { name, email, phone_no, password, bio } = req.body;
     // Check for missing fields
     const missingFields = [];
     if (!name) missingFields.push("name");
@@ -27,7 +27,7 @@ const registerTrainer = async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    await Trainer.create({ name, email, phone_no, password: hashedPassword, role: 'trainer' });
+    await Trainer.create({ name, email, phone_no, password: hashedPassword, role: 'trainer', bio });
     res.status(201).json({ message: 'Trainer registered successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message || "An error occurred during registration" });
@@ -93,7 +93,7 @@ const deleteTrainer = async (req, res) => {
       return res.status(404).json({ message: "Trainer not found" });
     }
     // Return success response
-    return res.status(200).json({ message: "Trainer deleted successfully", trainer });
+    return res.status(200).json({ message: "Trainer deleted successfully"});
   } catch (error) {
     // Handle invalid MongoDB ObjectID or other errors
     if (error.name === "CastError" && error.kind === "ObjectId") {
@@ -139,17 +139,64 @@ const loginTrainer = async (req, res) => {
   }
 }
 
-//@desc Current trainer info
-//@route GET /api/trainers/current
-//@access private
-const currentTrainer = async (req, res) => {
-  try {
-    // Return the current trainer information
-    return res.status(200).json(req.trainer);
-  } catch (error) {
-    // Handle any unexpected errors
-    return res.status(500).json({ message: "An error occurred while fetching the current trainer" });
-  }
-}
 
-export { registerTrainer, loginTrainer, currentTrainer, getTrainer, getAllTrainers, deleteTrainer };
+//@desc Update trainer data through admin (excluding password)
+//@route PATCH /api/trainers/:id
+//@access private (admin only)
+const updateTrainerByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // ID of the trainer
+    const { name, email, phone_no } = req.body; // Fields to update
+
+    // Construct update fields
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (phone_no) updateFields.phone_no = phone_no;
+
+    // Update trainer information
+    const updatedTrainer = await Trainer.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true, runValidators: true } // `new: true` returns updated document, `runValidators` ensures validation
+    );
+
+    if (!updatedTrainer) {
+      return res.status(404).json({ message: "Trainer not found." });
+    }
+
+    res.status(200).json({ message: "Trainer data updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "An error occurred while updating trainer data." });
+  }
+};
+
+
+//@desc Update trainer password through admin
+//@route PATCH /api/trainers/:id/password
+//@access private (admin only)
+const updateTrainerPasswordByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // Trainer ID
+    const { newPassword } = req.body; // New password to be set
+    // Validate input
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password is required." });
+    }
+    // Fetch the trainer by ID
+    const trainer = await Trainer.findById(id);
+    if (!trainer) {
+      return res.status(404).json({ message: "Trainer not found." });
+    }
+    // Hash and update the password
+    trainer.password = await bcrypt.hash(newPassword, 10);
+    // Save updated trainer info
+    await trainer.save();
+    res.status(200).json({ message: "Trainer password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "An error occurred while updating trainer password." });
+  }
+};
+
+
+export { registerTrainer, loginTrainer, updateTrainerByAdmin, updateTrainerPasswordByAdmin, getTrainer, getAllTrainers, deleteTrainer };

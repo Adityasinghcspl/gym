@@ -22,10 +22,15 @@ const trainerSchema = mongoose.Schema(
     role: {
       type: String,
       required: [true, "Please set the role"]
-    }
+    },
+    bio: {
+      type: String,
+      default: "", // Optional field with a default empty value
+    },
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
