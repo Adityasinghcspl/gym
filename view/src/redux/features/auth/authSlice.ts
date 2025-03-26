@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AccessToken, SignInTrainerForm } from "../../../types/type";
+import { AccessToken, SignInTrainerForm, SignUpUserForm } from "../../../types/type";
 import { RestClientBuilder } from "../../../utils/RestClient";
 import { RESTServerRoute } from "../../../types/server";
 import { authState } from "../../../types/slice";
@@ -16,22 +16,21 @@ const initialState: authState = {
     loading: false,
     error: null
   },
-  signUpUser:{
+  signUpUser: {
     data: null,
     loading: false,
     error: null
   },
-  signInUser:{
+  signInUser: {
     data: null,
     loading: false,
     error: null
   }
 };
 
-
-// Define an async thunk for sign-in action
+// Define an async thunk for sign-in trainer action
 export const signInTrainer = createAsyncThunk<AccessToken, SignInTrainerForm>(
-  'api/trainer/register',
+  'trainer/login',
   async (signInData, { rejectWithValue }) => {
     try {
       const response = await RestClientBuilder.instance()
@@ -45,7 +44,24 @@ export const signInTrainer = createAsyncThunk<AccessToken, SignInTrainerForm>(
 
       return response; // Return only necessary data
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
+      console.log(error);
+      return rejectWithValue(error?.message || "Login failed");
+    }
+  }
+);
+
+// Define an async thunk for sign-up trainer action
+export const signUpTrainer = createAsyncThunk<{ message: string }, SignUpUserForm>(
+  'trainer/register',
+  async (signUpData, { rejectWithValue }) => {
+    try {
+      const response = await RestClientBuilder.instance()
+        .withBaseUrl(config.API_REST_ENDPOINT)
+        .build()
+        .post<{ message: string }>(RESTServerRoute.REST_SIGNUP_TRAINER, signUpData);
+      return response; // Return only necessary data
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "SignUp failed");
     }
   }
 );
@@ -80,6 +96,20 @@ const authSlice = createSlice({
       .addCase(signInTrainer.rejected, (state, action) => {
         state.signInTrainer.loading = false;
         state.signInTrainer.error = action.payload as string;
+      })
+      // Handle signUpTrainer request
+      .addCase(signUpTrainer.pending, (state) => {
+        state.signUpTrainer.loading = true;
+        state.signUpTrainer.error = null;
+        state.signUpTrainer.data = null;
+      })
+      .addCase(signUpTrainer.fulfilled, (state, action) => {
+        state.signUpTrainer.loading = false;
+        state.signUpTrainer.data = action.payload.message; // Set success message
+      })
+      .addCase(signUpTrainer.rejected, (state, action) => {
+        state.signUpTrainer.loading = false;
+        state.signUpTrainer.error = action.payload as string; // Set error message
       });
   }
 });
