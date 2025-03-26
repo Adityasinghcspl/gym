@@ -5,9 +5,10 @@ import LogoDark from '../../images/logo/logo.png';
 import Logo from '../../images/logo/logo.png';
 import { MdOutlineMail, MdVisibilityOff, MdVisibility } from 'react-icons/md';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { AccessToken, SignInTrainerForm } from '../../types/type';
+import { SignInTrainerForm } from '../../types/type';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
+import { toast } from 'react-toastify';
 import { signInTrainer } from '../../redux/features/auth/authSlice';
 
 const SignIn: React.FC = () => {
@@ -25,14 +26,26 @@ const SignIn: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<SignInTrainerForm> = async (data) => {
-    const result = await dispatch(signInTrainer(data));
-    const payload = result.payload as AccessToken;
-    if (payload.accessToken) {
-      localStorage.setItem('accessToken', payload.accessToken);
-      window.dispatchEvent(new Event('storage'));
-      navigate('/'); // Redirect on success
-    }
+    await toast.promise(
+      dispatch(signInTrainer(data))
+        .unwrap()
+        .then((payload) => {
+          localStorage.setItem('accessToken', payload.accessToken);
+          window.dispatchEvent(new Event('storage'));
+          navigate('/');
+        }),
+      {
+        pending: 'Signing in...',
+        success: 'Login successful!',
+        error: {
+          render({ data }) {
+            return (data as string) || 'Login failed';
+          },
+        },
+      },
+    );
   };
+
   return (
     <>
       {/* <Breadcrumb pageName="Sign In" /> */}
