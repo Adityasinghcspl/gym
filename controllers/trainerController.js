@@ -146,10 +146,11 @@ const loginTrainer = async (req, res) => {
 const updateTrainerByAdmin = async (req, res) => {
   try {
     const { id } = req.params; // ID of the trainer
-    const { name, email, phone_no } = req.body; // Fields to update
+    const { name, email, phone_no, bio } = req.body; // Fields to update
 
     // Construct update fields
     const updateFields = {};
+    if (bio) updateFields.bio = bio;
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
     if (phone_no) updateFields.phone_no = phone_no;
