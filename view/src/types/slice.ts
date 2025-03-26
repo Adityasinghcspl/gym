@@ -1,8 +1,8 @@
-import { AccessToken, SignUpTrainerForm, SignUpUserForm } from "./type";
+import { AccessToken, SignUpUserForm, trainer } from "./type";
 
 export interface authState {
   signUpTrainer: {
-    data: SignUpTrainerForm | null;
+    data: string | null;
     loading: boolean;
     error: any | null;
   };
@@ -18,6 +18,19 @@ export interface authState {
   };
   signInUser: {
     data: AccessToken | null;
+    loading: boolean;
+    error: any | null;
+  };
+}
+
+export interface trainerState {
+  trainersList: {
+    data: trainer[] | null;
+    loading: boolean;
+    error: any | null;
+  };
+  trainer: {
+    data: trainer | null;
     loading: boolean;
     error: any | null;
   };
