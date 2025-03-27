@@ -1,20 +1,24 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { useEffect, useState } from 'react';
-import { deleteTrainer, getAllTrainers } from '../../redux/features/auth/trainerSlice';
+import { deleteTrainer, getAllTrainers, updateTrainer } from '../../redux/features/auth/trainerSlice';
 import Loader from '../../common/Loader';
 import { MdDelete, MdFileCopy, MdModeEdit } from 'react-icons/md';
 import { getTokenData, isAdmin } from '../../utils/Utils';
 import { toast } from 'react-toastify';
 import DeleteModal from '../Modal/DeleteModal';
+import { trainer } from '../../types/type';
+import EditFormModal from '../Modal/EditFormModel';
 
 const Trainers = () => {
+  const admin = isAdmin();
   const dispatch = useDispatch<AppDispatch>();
   const trainers = useSelector((state: RootState) => state.trainer.trainersList);
-  const admin = isAdmin();
-
   const [selectedTrainerId, setSelectedTrainerId] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState<trainer | null>(null);
+
   const tokenData = getTokenData();
   const loggedInTrainerId = tokenData?.id;
 
@@ -29,6 +33,23 @@ const Trainers = () => {
       toast.success(data?.message || 'Trainer deleted successfully');
       setShowDeleteModal(false);
       setSelectedTrainerId('');
+      dispatch(getAllTrainers());
+    } catch (error) {
+      toast.error(error as string);
+    }
+  };
+
+  const handleEdit = (trainer: trainer) => {
+    setSelectedTrainer(trainer);
+    setIsEditOpen(true);
+  };
+
+  const handleConfirmEdit = async(updatedTrainer: trainer) => {
+    setIsEditOpen(false);
+    try {
+      const data = await dispatch(updateTrainer({ id: updatedTrainer._id, trainerData: updatedTrainer })).unwrap();
+      toast.success(data?.message || 'Trainer Update successfully');
+      setIsEditOpen(false);
       dispatch(getAllTrainers());
     } catch (error) {
       toast.error(error as string);
@@ -71,7 +92,7 @@ const Trainers = () => {
                 {admin && (
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
-                      <button className="hover:text-primary">
+                      <button className="hover:text-primary" onClick={() => handleEdit(trainer)}>
                         <MdModeEdit size={22} />
                       </button>
                       <button
@@ -133,6 +154,16 @@ const Trainers = () => {
           onClose={() => setShowDeleteModal(false)}
           onConfirm={() => confirmDelete()}
         />
+        {/* Edit Form Modal */}
+        {selectedTrainer && (
+          <EditFormModal
+            entityType="Trainer"
+            open={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            onConfirm={handleConfirmEdit}
+            initialData={selectedTrainer}
+          />
+        )}
       </div>
     </div>
   );
