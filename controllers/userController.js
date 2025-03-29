@@ -27,8 +27,8 @@ const registerUser = async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, email, phone_no, address, password: hashedPassword });
-    res.status(201).json(user);
+    const user = await User.create({ username, email, phone_no, address, password: hashedPassword, role:'user' });
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message || "An error occurred during registration" });
   }
@@ -40,7 +40,9 @@ const registerUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     // Fetch all users and sort by name
-    const users = await User.find().sort({ name: 1 });
+    const users = await User.find()
+    .sort({ name: 1 })
+    .select('_id name email phone_no createdAt updatedAt');
     res.status(200).json(users);
   } catch (err) {
     // Handle any errors that occur during the database operation
@@ -93,12 +95,10 @@ const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       const accessToken = jwt.sign(
         {
-          user: {
-            username: user.username,
-            email: user.email,
-            id: user._id,
-            role: 'user'
-          },
+          username: user.username,
+          email: user.email,
+          id: user._id,
+          role: user.role
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1d" }
@@ -125,4 +125,90 @@ const currentUser = async (req, res) => {
   }
 }
 
-export { registerUser, loginUser, currentUser, getUser, getAllUsers };
+//@desc delete single user
+//@route Delete /api/user/:id
+//@access private
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  // Validate the provided id
+  if (!id) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    // Find and delete the user by ID
+    const user = await User.findByIdAndDelete(id).exec();
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Return success response
+    return res.status(200).json({ message: "User deleted successfully"});
+  } catch (error) {
+    // Handle invalid MongoDB ObjectID or other errors
+    if (error.name === "CastError" && error.kind === "ObjectId") {
+      return res.status(400).json({ message: "Invalid User ID format" });
+    }
+    // Handle other errors
+    return res.status(500).json({ message: "An error occurred while deleting the User." });
+  }
+}
+
+//@desc Update user data through admin (excluding password)
+//@route PATCH /api/user/:id
+//@access private (admin only)
+const updateUserByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // ID of the user
+    const { name, email, phone_no, address } = req.body; // Fields to update
+
+    // Construct update fields
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (address) updateFields.address = address;
+    if (phone_no) updateFields.phone_no = phone_no;
+
+    // Update user information
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true, runValidators: true } // `new: true` returns updated document, `runValidators` ensures validation
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "User data updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "An error occurred while updating user data." });
+  }
+};
+
+
+//@desc Update user password through admin
+//@route PATCH /api/user/:id/password
+//@access private (admin only)
+const updateUserPasswordByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // User ID
+    const { newPassword } = req.body; // New password to be set
+    // Validate input
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password is required." });
+    }
+    // Fetch the user by ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    // Hash and update the password
+    user.password = await bcrypt.hash(newPassword, 10);
+    // Save updated user info
+    await user.save();
+    res.status(200).json({ message: "User password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "An error occurred while updating user password." });
+  }
+};
+
+export { registerUser, loginUser, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin };
