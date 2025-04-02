@@ -1,24 +1,19 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/userModel.js';
+import { User, validateUser, validateUserUpdate } from '../models/userModel.js';
 
 //@desc Register a user
 //@route POST /api/users/register
 //@access public
 const registerUser = async (req, res) => {
   try {
-    const { username, email, phone_no, password, address } = req.body;
-    // Check for missing fields
-    const missingFields = [];
-    if (!username) missingFields.push("username");
-    if (!email) missingFields.push("email");
-    if (!phone_no) missingFields.push("phone_no");
-    if (!password) missingFields.push("password");
-
-    if (missingFields.length > 0) {
-      res.status(400);
-      throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+    // Validate request body using Joi
+    const { error } = validateUser(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
+    const { name, email, phone_no, password, address } = req.body;
+
     // Check if user already exists
     const userAvailable = await User.findOne({ email });
     if (userAvailable) {
@@ -27,7 +22,7 @@ const registerUser = async (req, res) => {
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, email, phone_no, address, password: hashedPassword, role:'user' });
+    await User.create({ name, email, phone_no, address, password: hashedPassword, role: 'user' });
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message || "An error occurred during registration" });
@@ -41,8 +36,8 @@ const getAllUsers = async (req, res) => {
   try {
     // Fetch all users and sort by name
     const users = await User.find()
-    .sort({ name: 1 })
-    .select('_id name email phone_no createdAt updatedAt');
+      .sort({ name: 1 })
+      .select('_id name email phone_no address createdAt updatedAt');
     res.status(200).json(users);
   } catch (err) {
     // Handle any errors that occur during the database operation
@@ -95,7 +90,7 @@ const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       const accessToken = jwt.sign(
         {
-          username: user.username,
+          name: user.name,
           email: user.email,
           id: user._id,
           role: user.role
@@ -141,7 +136,7 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // Return success response
-    return res.status(200).json({ message: "User deleted successfully"});
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     // Handle invalid MongoDB ObjectID or other errors
     if (error.name === "CastError" && error.kind === "ObjectId") {
@@ -157,30 +152,16 @@ const deleteUser = async (req, res) => {
 //@access private (admin only)
 const updateUserByAdmin = async (req, res) => {
   try {
-    const { id } = req.params; // ID of the user
-    const { name, email, phone_no, address } = req.body; // Fields to update
+    const { id } = req.params;
+    const { error } = validateUserUpdate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
-    // Construct update fields
-    const updateFields = {};
-    if (name) updateFields.name = name;
-    if (email) updateFields.email = email;
-    if (address) updateFields.address = address;
-    if (phone_no) updateFields.phone_no = phone_no;
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
 
-    // Update user information
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { $set: updateFields },
-      { new: true, runValidators: true } // `new: true` returns updated document, `runValidators` ensures validation
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    res.status(200).json({ message: "User data updated successfully." });
+    res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message || "An error occurred while updating user data." });
+    res.status(500).json({ message: "An error occurred while updating the user" });
   }
 };
 
@@ -190,24 +171,20 @@ const updateUserByAdmin = async (req, res) => {
 //@access private (admin only)
 const updateUserPasswordByAdmin = async (req, res) => {
   try {
-    const { id } = req.params; // User ID
-    const { newPassword } = req.body; // New password to be set
-    // Validate input
-    if (!newPassword) {
-      return res.status(400).json({ message: "New password is required." });
-    }
-    // Fetch the user by ID
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword) return res.status(400).json({ message: "New password is required" });
+
     const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
-    // Hash and update the password
+    if (!user) return res.status(404).json({ message: "User not found" });
+
     user.password = await bcrypt.hash(newPassword, 10);
-    // Save updated user info
     await user.save();
-    res.status(200).json({ message: "User password updated successfully." });
+    
+    res.status(200).json({ message: "User password updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message || "An error occurred while updating user password." });
+    res.status(500).json({ message: "An error occurred while updating user password" });
   }
 };
 

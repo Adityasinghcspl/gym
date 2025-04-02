@@ -1,24 +1,18 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import Trainer from '../models/trainerModel.js';
+import { Trainer, validateTrainer, validateTrainerUpdate } from '../models/trainerModel.js';
 
 //@desc Register a trainer
 //@route POST /api/trainers/register
 //@access public
 const registerTrainer = async (req, res) => {
   try {
-    const { name, email, phone_no, password, bio } = req.body;
-    // Check for missing fields
-    const missingFields = [];
-    if (!name) missingFields.push("name");
-    if (!email) missingFields.push("email");
-    if (!phone_no) missingFields.push("phone_no");
-    if (!password) missingFields.push("password");
-
-    if (missingFields.length > 0) {
-      res.status(400);
-      throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+    const { error } = validateTrainer(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
+
+    const { name, email, phone_no, password, bio } = req.body;
     // Check if trainer already exists
     const trainerAvailable = await Trainer.findOne({ email });
     if (trainerAvailable) {
@@ -93,7 +87,7 @@ const deleteTrainer = async (req, res) => {
       return res.status(404).json({ message: "Trainer not found" });
     }
     // Return success response
-    return res.status(200).json({ message: "Trainer deleted successfully"});
+    return res.status(200).json({ message: "Trainer deleted successfully" });
   } catch (error) {
     // Handle invalid MongoDB ObjectID or other errors
     if (error.name === "CastError" && error.kind === "ObjectId") {
@@ -145,27 +139,16 @@ const loginTrainer = async (req, res) => {
 //@access private (admin only)
 const updateTrainerByAdmin = async (req, res) => {
   try {
-    const { id } = req.params; // ID of the trainer
-    const { name, email, phone_no, bio } = req.body; // Fields to update
+    const { error } = validateTrainerUpdate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
-    // Construct update fields
-    const updateFields = {};
-    if (bio) updateFields.bio = bio;
-    if (name) updateFields.name = name;
-    if (email) updateFields.email = email;
-    if (phone_no) updateFields.phone_no = phone_no;
-
-    // Update trainer information
     const updatedTrainer = await Trainer.findByIdAndUpdate(
-      id,
-      { $set: updateFields },
-      { new: true, runValidators: true } // `new: true` returns updated document, `runValidators` ensures validation
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
     );
 
-    if (!updatedTrainer) {
-      return res.status(404).json({ message: "Trainer not found." });
-    }
-
+    if (!updatedTrainer) return res.status(404).json({ message: "Trainer not found." });
     res.status(200).json({ message: "Trainer data updated successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message || "An error occurred while updating trainer data." });
