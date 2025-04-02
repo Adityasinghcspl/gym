@@ -4,22 +4,19 @@ import PageTitle from '../components/PageTitle';
 import ECommerce from '../pages/Dashboard/ECommerce';
 import Calendar from '../pages/Calendar';
 import Profile from '../pages/Profile';
-import FormElements from '../pages/Form/FormElements';
-import FormLayout from '../pages/Form/FormLayout';
-import Tables from '../pages/Tables';
+import Trainer from '../pages/Trainer';
 import Settings from '../pages/Settings';
-import Alerts from '../pages/UiElements/Alerts';
-import Buttons from '../pages/UiElements/Buttons';
 import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import { useEffect, useState } from 'react';
+import { isAuthenticated } from '../utils/Utils';
 
 export default function DashboardRoutes() {
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(!!localStorage.getItem('accessToken'));
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
 
   useEffect(() => {
     const handleAuthChange = () => {
-      setIsAuthorized(!!localStorage.getItem('accessToken'));
+      setIsAuthorized(isAuthenticated());
     };
 
     window.addEventListener('storage', handleAuthChange);
@@ -29,7 +26,6 @@ export default function DashboardRoutes() {
     };
   }, []);
 
-  console.log(isAuthorized, 'localStorage.getItem', localStorage.getItem('accessToken'));
   if (!isAuthorized) {
     return (
       <Routes>
@@ -88,29 +84,11 @@ export default function DashboardRoutes() {
             }
           />
           <Route
-            path="/forms/form-elements"
+            path="/trainers"
             element={
               <>
-                <PageTitle title="Form Elements | Admin Dashboard" />
-                <FormElements />
-              </>
-            }
-          />
-          <Route
-            path="/forms/form-layout"
-            element={
-              <>
-                <PageTitle title="Form Layout | Admin Dashboard" />
-                <FormLayout />
-              </>
-            }
-          />
-          <Route
-            path="/tables"
-            element={
-              <>
-                <PageTitle title="Tables | Admin Dashboard" />
-                <Tables />
+                <PageTitle title="Trainer | Admin Dashboard" />
+                <Trainer />
               </>
             }
           />
@@ -123,24 +101,6 @@ export default function DashboardRoutes() {
               </>
             }
           />
-          <Route
-            path="/ui/alerts"
-            element={
-              <>
-                <PageTitle title="Alerts | Admin Dashboard" />
-                <Alerts />
-              </>
-            }
-          />
-          <Route
-            path="/ui/buttons"
-            element={
-              <>
-                <PageTitle title="Buttons | Admin Dashboard" />
-                <Buttons />
-              </>
-            }
-          />  
           <Route path="/auth/*" element={<Navigate to="/" replace />} />
         </Routes>
       </DefaultLayout>

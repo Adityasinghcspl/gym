@@ -7,17 +7,22 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { SignUpTrainerForm } from '../../types/type';
 import { FiUser } from 'react-icons/fi';
 import { MdOutlineMail, MdOutlinePhone, MdVisibilityOff, MdVisibility } from 'react-icons/md';
+import { signUpTrainer } from '../../redux/features/auth/authSlice';
+import { AppDispatch } from '../../redux/store';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const SignUp: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
     clearErrors,
+    reset,
   } = useForm<SignUpTrainerForm>();
   const password = watch('password');
 
@@ -30,15 +35,20 @@ const SignUp: React.FC = () => {
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
 
-  const onSubmit: SubmitHandler<SignUpTrainerForm> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SignUpTrainerForm> = async (data) => {
+    const result = await dispatch(signUpTrainer(data));
+    const payload = result.payload as { message: string };
+    if (payload.message) {
+      toast.success(payload.message);
+      reset();
+    }
   };
 
   return (
     <>
       {/* <Breadcrumb pageName="Sign Up" /> */}
 
-      <div className="rounded-sm border border-stroke bg-white h-screen shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="rounded-sm border border-stroke bg-white h-full shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">

@@ -83,6 +83,15 @@ class RestClient {
     }
   }
 
+  async patch<T>(endpoint: string, data: any = {}): Promise<T> {
+    try {
+      const response = await this.axios.patch<T>(endpoint, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete<T>(endpoint: string): Promise<T> {
     try {
       const response = await this.axios.delete<T>(endpoint);

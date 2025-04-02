@@ -1,7 +1,77 @@
+import { toast } from 'react-toastify';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import userThree from '../images/user/user-03.png';
+import { useEffect } from 'react';
+import Loader from '../common/Loader';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
+import { getTrainer, updateTrainer } from '../redux/features/auth/trainerSlice';
+import { getTokenData } from '../utils/Utils';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { trainer } from '../types/type';
 
 const Settings = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const trainerState = useSelector((state: RootState) => state.trainer.trainer);
+  const userId = getTokenData()?.id as string;
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm<trainer>({
+    defaultValues: {
+      name: '',
+      phone_no: '',
+      email: '',
+      bio: '',
+    },
+    mode: 'onChange',
+  });
+
+  useEffect(() => {
+    dispatch(getTrainer(userId));
+  }, [dispatch, userId]);
+
+  useEffect(() => {
+    if (trainerState?.data) {
+      reset({
+        name: trainerState.data.name || '',
+        phone_no: trainerState.data.phone_no || '',
+        email: trainerState.data.email || '',
+        bio: trainerState.data.bio || '',
+      });
+    }
+  }, [trainerState.data, reset]);
+
+  const watchedFields = watch(); // Watch all fields
+
+  // Check if there are changes
+  const isChanged =
+    trainerState.data &&
+    (watchedFields.name !== trainerState.data.name ||
+      watchedFields.phone_no !== trainerState.data.phone_no ||
+      watchedFields.email !== trainerState.data.email ||
+      watchedFields.bio !== trainerState.data.bio);
+
+  if (trainerState.loading) return <Loader />;
+
+  if (trainerState.error) {
+    toast.dismiss();
+    toast.error(trainerState.error);
+  }
+
+  const onSubmit: SubmitHandler<trainer> = async (data) => {
+    try {
+      const resultAction = await dispatch(updateTrainer({ id: userId, trainerData: data })).unwrap();
+      toast.success(resultAction?.message || 'Trainer Update successfully');
+    } catch (error) {
+      toast.error(error as string);
+    }
+  };
+
   return (
     <>
       <div className="mx-auto max-w-270">
@@ -11,18 +81,13 @@ const Settings = () => {
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Personal Information
-                </h3>
+                <h3 className="font-medium text-black dark:text-white">Personal Information</h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="fullName"
-                      >
+                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName">
                         Full Name
                       </label>
                       <div className="relative">
@@ -52,13 +117,18 @@ const Settings = () => {
                           </svg>
                         </span>
                         <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          className={`w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary ${
+                            errors.name ? 'border-red-500' : 'border-stroke'
+                          }`}
                           type="text"
-                          name="fullName"
-                          id="fullName"
-                          placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          placeholder="Enter your full name"
+                          {...register('name', {
+                            required: 'Name is required',
+                            minLength: { value: 3, message: 'Minimum 3 characters' },
+                            maxLength: { value: 30, message: 'Maximum 30 characters' },
+                          })}
                         />
+                        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
                       </div>
                     </div>
 
@@ -70,21 +140,25 @@ const Settings = () => {
                         Phone Number
                       </label>
                       <input
-                        className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
-                        name="phoneNumber"
-                        id="phoneNumber"
-                        placeholder="+990 3343 7865"
-                        defaultValue="+990 3343 7865"
+                        placeholder="Enter phone number"
+                        {...register('phone_no', {
+                          required: 'Phone number is required',
+                          pattern: {
+                            value: /^[0-9]{10}$/,
+                            message: 'Phone number must be 10 digits',
+                          },
+                        })}
+                        className={`w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary ${
+                          errors.phone_no ? 'border-red-500' : 'border-stroke'
+                        }`}
                       />
+                      {errors.phone_no && <p className="text-red-500 text-sm mt-1">{errors.phone_no.message}</p>}
                     </div>
                   </div>
 
                   <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="emailAddress"
-                    >
+                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="emailAddress">
                       Email Address
                     </label>
                     <div className="relative">
@@ -114,38 +188,25 @@ const Settings = () => {
                         </svg>
                       </span>
                       <input
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="email"
-                        name="emailAddress"
-                        id="emailAddress"
-                        placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        placeholder="Enter email address"
+                        {...register('email', {
+                          required: 'Email is required',
+                          pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: 'Invalid email address',
+                          },
+                        })}
+                        className={`w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary ${
+                          errors.email ? 'border-red-500' : 'border-stroke'
+                        }`}
                       />
+                      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                     </div>
                   </div>
 
                   <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="Username"
-                    >
-                      Username
-                    </label>
-                    <input
-                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      name="Username"
-                      id="Username"
-                      placeholder="devidjhon24"
-                      defaultValue="devidjhon24"
-                    />
-                  </div>
-
-                  <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="Username"
-                    >
+                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="Username">
                       BIO
                     </label>
                     <div className="relative">
@@ -181,26 +242,41 @@ const Settings = () => {
                       </span>
 
                       <textarea
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        name="bio"
-                        id="bio"
-                        rows={6}
-                        placeholder="Write your bio here"
-                        defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
+                        rows={4}
+                        placeholder="Write your bio"
+                        {...register('bio', {
+                          required: 'Bio is required', // Added required validation
+                          maxLength: { value: 200, message: 'Bio cannot exceed 200 characters' },
+                        })}
+                        className={`w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary ${
+                          errors.bio ? 'border-red-500' : 'border-stroke'
+                        }`}
                       ></textarea>
+                      {errors.bio && <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>}
                     </div>
                   </div>
 
                   <div className="flex justify-end gap-4.5">
                     <button
+                      type="button"
+                      onClick={() =>
+                        reset({
+                          name: trainerState.data?.name || '',
+                          phone_no: trainerState.data?.phone_no || '',
+                          email: trainerState.data?.email || '',
+                          bio: trainerState.data?.bio || '',
+                        })
+                      }
                       className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="submit"
                     >
                       Cancel
                     </button>
                     <button
-                      className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
                       type="submit"
+                      className={`flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 ${
+                        !isChanged ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      disabled={!isChanged}
                     >
                       Save
                     </button>
@@ -212,9 +288,7 @@ const Settings = () => {
           <div className="col-span-5 xl:col-span-2">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Your Photo
-                </h3>
+                <h3 className="font-medium text-black dark:text-white">Your Photo</h3>
               </div>
               <div className="p-7">
                 <form action="#">
@@ -223,16 +297,10 @@ const Settings = () => {
                       <img src={userThree} alt="User" />
                     </div>
                     <div>
-                      <span className="mb-1.5 text-black dark:text-white">
-                        Edit your photo
-                      </span>
+                      <span className="mb-1.5 text-black dark:text-white">Edit your photo</span>
                       <span className="flex gap-2.5">
-                        <button className="text-sm hover:text-primary">
-                          Delete
-                        </button>
-                        <button className="text-sm hover:text-primary">
-                          Update
-                        </button>
+                        <button className="text-sm hover:text-primary">Delete</button>
+                        <button className="text-sm hover:text-primary">Update</button>
                       </span>
                     </div>
                   </div>
@@ -248,13 +316,7 @@ const Settings = () => {
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             fillRule="evenodd"
                             clipRule="evenodd"
@@ -276,8 +338,7 @@ const Settings = () => {
                         </svg>
                       </span>
                       <p>
-                        <span className="text-primary">Click to upload</span> or
-                        drag and drop
+                        <span className="text-primary">Click to upload</span> or drag and drop
                       </p>
                       <p className="mt-1.5">SVG, PNG, JPG or GIF</p>
                       <p>(max, 800 X 800px)</p>
