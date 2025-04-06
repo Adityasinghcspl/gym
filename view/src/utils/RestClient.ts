@@ -4,7 +4,7 @@ export class RestClientBuilder {
   private axiosInstance: AxiosInstance;
 
   private constructor() {
-    this.axiosInstance = axios.create();
+    this.axiosInstance = axios.create({withCredentials: true});
   }
 
   static instance(): RestClientBuilder {

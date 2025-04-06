@@ -5,7 +5,7 @@ import userSix from '../images/user/user-06.png';
 import { Link } from 'react-router-dom';
 import { AppDispatch, RootState } from '../redux/store';
 import { useEffect } from 'react';
-import { getTrainer } from '../redux/features/auth/trainerSlice';
+import { getTrainer } from '../redux/features/trainer/trainerSlice';
 import { getTokenData } from '../utils/Utils';
 import Loader from '../common/Loader';
 import { toast } from 'react-toastify';
