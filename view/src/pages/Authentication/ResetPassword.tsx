@@ -1,68 +1,60 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 // import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo.png';
 import Logo from '../../images/logo/logo.png';
-import { MdOutlineMail, MdVisibilityOff, MdVisibility } from 'react-icons/md';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { SignInTrainerForm } from '../../types/type';
-import { useDispatch } from 'react-redux';
+import { ResetPasswordForm } from '../../types/type';
+import { MdVisibilityOff, MdVisibility } from 'react-icons/md';
+import { trainerResetPassword } from '../../redux/features/auth/authSlice';
 import { AppDispatch } from '../../redux/store';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { signInTrainer, trainerSendResetPasswordLink } from '../../redux/features/auth/authSlice';
 
-const SignIn: React.FC = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
+const ResetPassword: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { userId, token } = useParams<{ userId: string; token: string }>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm<SignInTrainerForm>();
+    clearErrors
+  } = useForm<ResetPasswordForm>();
+  const password = watch('password');
 
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
+  useEffect(() => {
+    if (password) {
+      clearErrors('retype_password');
+    }
+  }, [password, clearErrors]);
 
-  const onSubmit: SubmitHandler<SignInTrainerForm> = async (data) => {
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
+
+  const onSubmit: SubmitHandler<ResetPasswordForm> = async (data) => {
+    if (!userId || !token) {
+      toast.error('Invalid or expired reset link.');
+      return;
+    }
+
     await toast.promise(
-      dispatch(signInTrainer(data))
-        .unwrap()
-        .then((payload) => {
-          localStorage.setItem('accessToken', payload.accessToken);
-          window.dispatchEvent(new Event('storage'));
-          navigate('/');
-        }),
-      {
-        pending: 'Signing in...',
-        success: 'Login successful!',
-        error: {
-          render({ data }) {
-            return (data as string) || 'Login failed';
-          },
-        },
-      },
-    );
-  };
-
-  // Function to handle password reset
-  const onResetPasswordSubmit = async (data: { email: string }) => {
-    await toast.promise(
-      dispatch(trainerSendResetPasswordLink(data.email))
+      dispatch(trainerResetPassword({ id: userId, token, password: data.password }))
         .unwrap()
         .then(() => {
           window.dispatchEvent(new Event('storage'));
           navigate('/auth/signin');
         }),
       {
-        pending: 'Password reset link sent to your email....',
-        success: 'Send email successfully!',
+        pending: 'Password Reset....',
+        success: 'Password Reset successfully!',
         error: {
           render({ data }) {
             console.log(data);
-            return (data as string) || 'Failed to send reset link.';
+            return (data as string) || 'Failed to Reset Password.';
           },
         },
       },
@@ -71,19 +63,18 @@ const SignIn: React.FC = () => {
 
   return (
     <>
-      {/* <Breadcrumb pageName="Sign In" /> */}
+      {/* <Breadcrumb pageName="Sign Up" /> */}
 
       <div className="rounded-sm border border-stroke bg-white h-full shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
-          <div className="hidden w-full md:block md:w-1/2">
+          <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-                <div className="bg-boxdark p-2 rounded-lg">
+                <div className="bg-gray-800 dark:block p-2 rounded-lg">
                   <img className="hidden dark:block" src={Logo} alt="Logo" />
                   <img className="dark:hidden" src={LogoDark} alt="Logo" />
                 </div>
               </Link>
-
               <p className="2xl:px-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit suspendisse.</p>
 
               <span className="mt-15 inline-block">
@@ -196,144 +187,80 @@ const SignIn: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-full border-stroke dark:border-strokedark md:w-1/2 md:border-l-2">
-            <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              {/* <span className="mb-1.5 block font-medium">Start for free</span> */}
-              {isForgotPassword ? (
-                <>
-                  <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                    Forgot Password
-                  </h2>
+          <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
+            <div className="w-full p-4 sm:px-12.5 xl:px-17.5 sm:py-8">
+              <h2 className="mb-9 text-2xl font-bold text-black text-center dark:text-white sm:text-title-xl2">
+                Sign Up
+              </h2>
 
-                  <form onSubmit={handleSubmit(onResetPasswordSubmit)}>
-                    <div className="mb-4">
-                      <label className="mb-2.5 block font-medium text-black dark:text-white">Email</label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          placeholder="Enter your email"
-                          className={`w-full rounded-lg border bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
-                            errors.email ? 'border-red-500' : 'border-stroke'
-                          }`}
-                          {...register('email', {
-                            required: 'Email is required',
-                            pattern: {
-                              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                              message: 'Invalid email address',
-                            },
-                          })}
-                        />
-                        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-                        <span className="absolute right-4 top-3">
-                          <MdOutlineMail size={22} color="#B3B3B3" />
-                        </span>
-                      </div>
-                    </div>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="mb-4">
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter your password"
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.password ? 'border-red-500' : 'border-stroke'
+                      }`}
+                      {...register('password', {
+                        required: 'Password is required',
+                        minLength: {
+                          value: 5,
+                          message: 'Password must be at least 5 characters long',
+                        },
+                        pattern: {
+                          value: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,}$/,
+                          message:
+                            'Password must contain at least one uppercase letter, number, and one special character',
+                        },
+                      })}
+                    />
+                    {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                    <span className="absolute right-4 top-3 cursor-pointer" onClick={togglePasswordVisibility}>
+                      {showPassword ? (
+                        <MdVisibilityOff size={22} color="#B3B3B3" />
+                      ) : (
+                        <MdVisibility size={22} color="#B3B3B3" />
+                      )}
+                    </span>
+                  </div>
+                </div>
 
-                    <div className="mb-5 mt-10">
-                      <input
-                        type="submit"
-                        value="Send Reset Link"
-                        className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-3 text-white transition hover:bg-opacity-90"
-                      />
-                    </div>
+                <div className="mb-6">
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Re-type Password</label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Re-enter your password"
+                      className={`w-full rounded-lg border border-stroke bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+                        errors.retype_password ? 'border-red-500' : 'border-stroke'
+                      }`}
+                      {...register('retype_password', {
+                        required: 'Please retype your password',
+                        validate: (value) => value === password || 'Passwords do not match',
+                      })}
+                    />
+                    {errors.retype_password && <p className="text-red-500">{errors.retype_password.message}</p>}
 
-                    <div className="mt-6 flex justify-between">
-                      <p>
-                        Don’t have an account?{' '}
-                        <Link to="#" onClick={() => setIsForgotPassword(!isForgotPassword)} className="text-primary">
-                          Sign In
-                        </Link>
-                      </p>
-                    </div>
-                  </form>
-                </>
-              ) : (
-                <>
-                  <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">Sign In</h2>
+                    <span className="absolute right-4 top-3 cursor-pointer" onClick={toggleConfirmPasswordVisibility}>
+                      {showConfirmPassword ? (
+                        <MdVisibilityOff size={22} color="#B3B3B3" />
+                      ) : (
+                        <MdVisibility size={22} color="#B3B3B3" />
+                      )}
+                    </span>
+                  </div>
+                </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="mb-4">
-                      <label className="mb-2.5 block font-medium text-black dark:text-white">Email</label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          placeholder="Enter your email"
-                          className={`w-full rounded-lg border bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
-                            errors.email ? 'border-red-500' : 'border-stroke'
-                          }`}
-                          {...register('email', {
-                            required: 'Email is required',
-                            pattern: {
-                              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                              message: 'Invalid email address',
-                            },
-                          })}
-                        />
-                        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-                        <span className="absolute right-4 top-3">
-                          <MdOutlineMail size={22} color="#B3B3B3" />
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
-                      <div className="relative">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="Enter your password"
-                          className={`w-full rounded-lg border bg-transparent py-3 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
-                            errors.password ? 'border-red-500' : 'border-stroke'
-                          }`}
-                          {...register('password', {
-                            required: 'Password is required',
-                            minLength: {
-                              value: 5,
-                              message: 'Password must be at least 5 characters long',
-                            },
-                            pattern: {
-                              value: /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,}$/,
-                              message:
-                                'Password must contain at least one uppercase letter, number, and one special character',
-                            },
-                          })}
-                        />
-                        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-                        <span className="absolute right-4 top-3 cursor-pointer" onClick={togglePasswordVisibility}>
-                          {showPassword ? (
-                            <MdVisibilityOff size={22} color="#B3B3B3" />
-                          ) : (
-                            <MdVisibility size={22} color="#B3B3B3" />
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mb-5">
-                      <input
-                        type="submit"
-                        value="Sign In"
-                        className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-3 text-white transition hover:bg-opacity-90"
-                      />
-                    </div>
-
-                    <div className="mt-6 flex justify-between">
-                      <p>
-                        Don’t have an account?{' '}
-                        <Link to="/auth/signup" className="text-primary">
-                          Sign Up
-                        </Link>
-                      </p>
-                      <p>
-                        <Link to="#" onClick={() => setIsForgotPassword(!isForgotPassword)} className="text-primary">
-                          Forgot Password.?
-                        </Link>
-                      </p>
-                    </div>
-                  </form>
-                </>
-              )}
+                <div className="mb-5">
+                  <input
+                    type="submit"
+                    value="Reset Password"
+                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                  />
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -342,4 +269,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default ResetPassword;

@@ -1,6 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User, validateUser, validateUserUpdate } from '../models/userModel.js';
+import { User, validateUser, validateUserUpdate } from '../models/User.js';
+import CryptoJS from "crypto-js";
+import Token from "../models/Token.js";
+import sendEmail from "../utils/sendEmail.js";
+import Joi from "joi";
 
 //@desc Register a user
 //@route POST /api/users/register
@@ -188,4 +192,62 @@ const updateUserPasswordByAdmin = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin };
+//@desc Update user password through send the email
+//@route POST /api/user/password-reset
+//@access public
+const requestUserPasswordReset = async (req, res) => {
+  try {
+    const schema = Joi.object({ email: Joi.string().email().required() });
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) return res.status(400).json({ message: "User with given email doesn't exist" });
+
+    let token = await Token.findOne({ userId: user._id });
+    if (!token) {
+      token = await new Token({
+        userId: user._id,
+        token: CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex),
+      }).save();
+    }
+
+    // Use process.env.USER_URL or default to localhost:3000
+    const baseUrl = process.env.USER_URL;
+    const link = `${baseUrl}/api/user/password-reset/${user._id}/${token.token}`;
+
+    await sendEmail(user.email, "Password Reset", `Click here to reset your password: ${link}`);
+    res.status(200).json({ message: "Password reset link sent to your email account" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while requesting password reset" });
+    console.error(error);
+  }
+};
+
+//@desc Update user password via email url
+//@route POST /password-reset/:userId/:token
+//@access public
+const resetUserPassword = async (req, res) => {
+  try {
+    const schema = Joi.object({ password: Joi.string().min(6).required() });
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).json({ message: "Invalid link or expired" });
+
+    const token = await Token.findOne({ userId: user._id, token: req.params.token });
+    if (!token) return res.status(400).json({ message: "Invalid link or expired" });
+
+    user.password = await bcrypt.hash(req.body.password, 10);
+    await user.save();
+    await token.deleteOne();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while resetting password" });
+    console.error(error);
+  }
+};
+
+export { registerUser, loginUser, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword };

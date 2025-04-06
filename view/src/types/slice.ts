@@ -1,4 +1,4 @@
-import { AccessToken, SignUpUserForm, trainer } from "./type";
+import { AccessToken, SignUpUserForm, trainer, User } from "./type";
 
 export interface authState {
   signUpTrainer: {
@@ -31,6 +31,19 @@ export interface trainerState {
   };
   trainer: {
     data: trainer | null;
+    loading: boolean;
+    error: any | null;
+  };
+}
+
+export interface UserState {
+  userList: {
+    data: User[] | null;
+    loading: boolean;
+    error: any | null;
+  };
+  user: {
+    data: User | null;
     loading: boolean;
     error: any | null;
   };

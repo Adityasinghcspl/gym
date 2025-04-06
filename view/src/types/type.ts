@@ -16,6 +16,11 @@ export type SignUpTrainerForm = {
   retype_password: string;
 };
 
+export type ResetPasswordForm = {
+  password: string;
+  retype_password: string;
+};
+
 export type SignInTrainerForm = {
   email: string;
   password: string;
@@ -43,7 +48,18 @@ export interface trainer {
   name: string;
   email: string;
   phone_no: string;
-  bio: string;
+  bio?: string;
+  role: Role;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  phone_no: string;
+  address?: string;
   role: Role;
   createdAt: string;
   updatedAt: string;

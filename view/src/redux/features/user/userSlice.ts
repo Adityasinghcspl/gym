@@ -1,26 +1,26 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RestClientBuilder } from "../../../utils/RestClient";
 import { RESTServerRoute } from "../../../types/server";
-import { trainerState } from "../../../types/slice";
+import { UserState } from "../../../types/slice";
 import config from "../../../config/config";
-import { trainer } from "../../../types/type";
+import { User } from "../../../types/type";
 
-const initialState: trainerState = {
-  trainersList: {
+const initialState: UserState = {
+  userList: {
     data: null,
     loading: false,
     error: null
   },
-  trainer: {
+  user: {
     data: null,
     loading: false,
     error: null
   }
 };
 
-// Define an async thunk for get all trainer
-export const getAllTrainers = createAsyncThunk<trainer[], void>(
-  'trainer/getAllTrainer',
+// Define an async thunk for get all user
+export const getAllUsers = createAsyncThunk<User[], void>(
+  'user/getAllUser',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -31,19 +31,19 @@ export const getAllTrainers = createAsyncThunk<trainer[], void>(
         .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
         .withParams({ Limit: 50 }) // Add any additional query parameters here
         .build()
-        .get<trainer[]>(RESTServerRoute.REST_All_TRAINERS); // Expecting an array of trainers
+        .get<User[]>(RESTServerRoute.REST_All_USERS); // Expecting an array of users
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while fetching trainers.';
+      const errorMessage = error?.message || 'An error occurred while fetching users.';
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// Define an async thunk for get trainer
-export const getTrainer = createAsyncThunk<trainer, string>(
-  'trainer/getTrainer',
+// Define an async thunk for get user
+export const getUser = createAsyncThunk<User, string>(
+  'user/getUser',
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -53,19 +53,19 @@ export const getTrainer = createAsyncThunk<trainer, string>(
         .withBaseUrl(config.API_REST_ENDPOINT)
         .withHeader('Authorization', token)
         .build()
-        .get<trainer>(RESTServerRoute.REST_TRAINER(id));
+        .get<User>(RESTServerRoute.REST_USER(id));
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while getting the trainer.';
+      const errorMessage = error?.message || 'An error occurred while getting the user.';
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// Define an async thunk for delete trainer
-export const deleteTrainer = createAsyncThunk<any, string>(
-  'trainer/deleteTrainer',
+// Define an async thunk for delete user
+export const deleteUser = createAsyncThunk<any, string>(
+  'user/deleteUser',
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -75,20 +75,20 @@ export const deleteTrainer = createAsyncThunk<any, string>(
         .withBaseUrl(config.API_REST_ENDPOINT)
         .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
         .build()
-        .delete<any>(RESTServerRoute.REST_DELETE_TRAINER(id)); // Expecting an array of trainers
+        .delete<any>(RESTServerRoute.REST_DELETE_USER(id)); // Expecting an array of user
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while deleting trainer.';
+      const errorMessage = error?.message || 'An error occurred while deleting user.';
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// Define an async thunk for update trainer
-export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: trainer }>(
-  'trainer/updateTrainer',
-  async ({ id, trainerData }, { rejectWithValue }) => {
+// Define an async thunk for update user
+export const updateUser = createAsyncThunk<any, { id: string; userData: User }>(
+  'user/updateUser',
+  async ({ id, userData }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -97,19 +97,19 @@ export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: tr
         .withBaseUrl(config.API_REST_ENDPOINT)
         .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
         .build()
-        .patch<any>(RESTServerRoute.REST_UPDATE_TRAINER(id), trainerData);
+        .patch<any>(RESTServerRoute.REST_UPDATE_USER(id), userData);
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the trainer.';
+      const errorMessage = error?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-// Define an async thunk for update trainer password using admin
-export const updateTrainerPassword = createAsyncThunk<any, { id: string; newPassword: string }>(
-  'trainer/updateTrainerPassword',
+// Define an async thunk for update user password using admin
+export const updateUserPassword = createAsyncThunk<any, { id: string; newPassword: string }>(
+  'user/updateUserPassword',
   async ({ id, newPassword }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -119,53 +119,53 @@ export const updateTrainerPassword = createAsyncThunk<any, { id: string; newPass
         .withBaseUrl(config.API_REST_ENDPOINT)
         .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
         .build()
-        .patch<any>(RESTServerRoute.REST_UPDATE_PASSWORD_TRAINER(id), newPassword);
+        .patch<any>(RESTServerRoute.REST_UPDATE_PASSWORD_USER(id), newPassword);
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the trainer.';
+      const errorMessage = error?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);
     }
   }
 );
 
 
-const trainerSlice = createSlice({
-  name: "authentication",
+const userSlice = createSlice({
+  name: "user",
   initialState,
   reducers: {
-    clearTrainerError: (state) => {
-      state.trainersList.error = null;
+    clearUserError: (state) => {
+      state.userList.error = null;
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getAllTrainers.pending, (state) => {
-        state.trainersList.loading = true;
-        state.trainersList.error = null;
+      .addCase(getAllUsers.pending, (state) => {
+        state.userList.loading = true;
+        state.userList.error = null;
       })
-      .addCase(getAllTrainers.fulfilled, (state, action) => {
-        state.trainersList.loading = false;
-        state.trainersList.data = action.payload;
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.userList.loading = false;
+        state.userList.data = action.payload;
       })
-      .addCase(getAllTrainers.rejected, (state, action) => {
-        state.trainersList.loading = false;
-        state.trainersList.error = action.payload as string;
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.userList.loading = false;
+        state.userList.error = action.payload as string;
       })
-      .addCase(getTrainer.pending, (state) => {
-        state.trainer.loading = true;
-        state.trainer.error = null;
+      .addCase(getUser.pending, (state) => {
+        state.user.loading = true;
+        state.user.error = null;
       })
-      .addCase(getTrainer.fulfilled, (state, action) => {
-        state.trainer.loading = false;
-        state.trainer.data = action.payload;
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.user.loading = false;
+        state.user.data = action.payload;
       })
-      .addCase(getTrainer.rejected, (state, action) => {
-        state.trainer.loading = false;
-        state.trainer.error = action.payload as string;
+      .addCase(getUser.rejected, (state, action) => {
+        state.user.loading = false;
+        state.user.error = action.payload as string;
       })
   }
 });
 
-export const { clearTrainerError } = trainerSlice.actions;
-export default trainerSlice.reducer;
+export const { clearUserError } = userSlice.actions;
+export default userSlice.reducer;

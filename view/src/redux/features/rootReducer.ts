@@ -1,10 +1,12 @@
 import {combineReducers} from '@reduxjs/toolkit';
 import authSlice from './auth/authSlice';
-import trainerSlice from './auth/trainerSlice';
+import trainerSlice from './trainer/trainerSlice';
+import userSlice from './user/userSlice';
 
 const rootReducer = combineReducers({
   auth: authSlice,
-  trainer: trainerSlice
+  trainer: trainerSlice,
+  user: userSlice
 });
 
 export default rootReducer;

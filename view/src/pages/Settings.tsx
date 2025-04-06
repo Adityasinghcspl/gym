@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import Loader from '../common/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
-import { getTrainer, updateTrainer } from '../redux/features/auth/trainerSlice';
+import { getTrainer, updateTrainer } from '../redux/features/trainer/trainerSlice';
 import { getTokenData } from '../utils/Utils';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { trainer } from '../types/type';

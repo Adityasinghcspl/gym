@@ -66,6 +66,54 @@ export const signUpTrainer = createAsyncThunk<{ message: string }, SignUpUserFor
   }
 );
 
+// Define an async thunk for trainer Send Reset Password Link action
+export const trainerSendResetPasswordLink = createAsyncThunk<{ message: string }, string>(
+  'trainer/sendResetPasswordLink',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await RestClientBuilder.instance()
+        .withBaseUrl(config.API_REST_ENDPOINT)
+        .build()
+        .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_TRAINER, {email: email});
+      return response; // Return only necessary data
+    } catch (error: any) {
+      return rejectWithValue(error?.message);
+    }
+  }
+);
+
+// Define an async thunk for trainer Reset Password action
+export const trainerResetPassword = createAsyncThunk<{ message: string }, { id: string, token: string, password: string }>(
+  'trainer/resetPassword',
+  async ({ id, token, password }, { rejectWithValue }) => {
+    try {
+      const response = await RestClientBuilder.instance()
+        .withBaseUrl(config.API_REST_ENDPOINT)
+        .build()
+        .post<{ message: string }>(RESTServerRoute.REST_RESET_PASSWORD_TRAINER(id, token), {password: password});
+      return response; // Return only necessary data
+    } catch (error: any) {
+      return rejectWithValue(error?.message);
+    }
+  }
+);
+
+// Define an async thunk for user Send Reset Password Link action
+export const userSendResetPasswordLink = createAsyncThunk<{ message: string }, string>(
+  'user/sendResetPasswordLink',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await RestClientBuilder.instance()
+        .withBaseUrl(config.API_REST_ENDPOINT)
+        .build()
+        .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_USER, email);
+      return response; // Return only necessary data
+    } catch (error: any) {
+      return rejectWithValue(error?.message);
+    }
+  }
+);
+
 
 const authSlice = createSlice({
   name: "authentication",

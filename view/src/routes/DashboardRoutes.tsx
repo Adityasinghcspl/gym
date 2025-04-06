@@ -10,6 +10,8 @@ import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import { useEffect, useState } from 'react';
 import { isAuthenticated } from '../utils/Utils';
+import User from '../pages/User';
+import ResetPassword from '../pages/Authentication/ResetPassword';
 
 export default function DashboardRoutes() {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
@@ -44,6 +46,15 @@ export default function DashboardRoutes() {
             <>
               <PageTitle title="Sign Up" />
               <SignUp />
+            </>
+          }
+        />
+        <Route
+          path="/api/trainer/password-reset/:userId/:token"
+          element={
+            <>
+              <PageTitle title="Reset Password" />
+              <ResetPassword />
             </>
           }
         />
@@ -89,6 +100,15 @@ export default function DashboardRoutes() {
               <>
                 <PageTitle title="Trainer | Admin Dashboard" />
                 <Trainer />
+              </>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <>
+                <PageTitle title="User | Admin Dashboard" />
+                <User />
               </>
             }
           />
