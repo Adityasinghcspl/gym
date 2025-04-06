@@ -1,6 +1,6 @@
 import express from 'express';
 import { validateToken, authorizeAdmin } from '../middleware/validateTokenHandler.js';
-import { registerTrainer, updateTrainerByAdmin, loginTrainer, getAllTrainers, getTrainer, deleteTrainer, updateTrainerPasswordByAdmin } from '../controllers/trainerController.js';
+import { registerTrainer, updateTrainerByAdmin, loginTrainer, getAllTrainers, getTrainer, deleteTrainer, updateTrainerPasswordByAdmin, requestTrainerPasswordReset, resetTrainerPassword } from '../controllers/trainerController.js';
 
 const router = express.Router();
 
@@ -8,6 +8,11 @@ const router = express.Router();
 router.post("/register", registerTrainer);
 router.post("/login", loginTrainer);
 router.get("/", validateToken, getAllTrainers);
+
+// Password reset routes
+router.post("/password-reset", requestTrainerPasswordReset);
+router.post("/password-reset/:userId/:token", resetTrainerPassword);
+
 // Generic dynamic route
 router.get("/:id", validateToken, getTrainer);
 router.delete("/:id", validateToken, authorizeAdmin, deleteTrainer);

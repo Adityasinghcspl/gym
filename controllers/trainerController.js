@@ -1,6 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Trainer, validateTrainer, validateTrainerUpdate } from '../models/trainerModel.js';
+import CryptoJS from "crypto-js";
+import Token from "../models/token.js";
+import sendEmail from "../utils/sendEmail.js";
+import Joi from "joi";
 
 //@desc Register a trainer
 //@route POST /api/trainers/register
@@ -182,5 +186,62 @@ const updateTrainerPasswordByAdmin = async (req, res) => {
   }
 };
 
+//@desc Update trainer password through send the email
+//@route POST /api/trainer/password-reset
+//@access public
+const requestTrainerPasswordReset = async (req, res) => {
+  try {
+    const schema = Joi.object({ email: Joi.string().email().required() });
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
-export { registerTrainer, loginTrainer, updateTrainerByAdmin, updateTrainerPasswordByAdmin, getTrainer, getAllTrainers, deleteTrainer };
+    const trainer = await Trainer.findOne({ email: req.body.email });
+    if (!trainer) return res.status(400).json({ message: "Trainer with given email doesn't exist" });
+
+    let token = await Token.findOne({ trainerId: trainer._id });
+    if (!token) {
+      token = await new Token({
+        userId: trainer._id,
+        token: CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex),
+      }).save();
+    }
+
+    // Use process.env.ADMIN_URL or default to localhost:3000
+    const baseUrl = process.env.ADMIN_URL;
+    const link = `${baseUrl}/api/trainer/password-reset/${trainer._id}/${token.token}`;
+
+    await sendEmail(trainer.email, "Password Reset", `Click here to reset your password: ${link}`);
+    res.status(200).json({ message: "Password reset link sent to your email account" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while requesting password reset" });
+    console.error(error);
+  }
+};
+
+//@desc Update trainer password via email url
+//@route POST /password-reset/:trainerId/:token
+//@access public
+const resetTrainerPassword = async (req, res) => {
+  try {
+    const schema = Joi.object({ password: Joi.string().min(6).required() });
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+    
+    const trainer = await Trainer.findById(req.params.userId);
+    if (!trainer) return res.status(400).json({ message: "Invalid link or expired" });
+    
+    const token = await Token.findOne({ userId: trainer._id, token: req.params.token });
+    if (!token) return res.status(400).json({ message: "Invalid link or expired" });
+
+    trainer.password = await bcrypt.hash(req.body.password, 10);
+    await trainer.save();
+    await token.deleteOne();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred while resetting password" });
+    console.error(error);
+  }
+};
+
+export { registerTrainer, loginTrainer, updateTrainerByAdmin, updateTrainerPasswordByAdmin, getTrainer, getAllTrainers, deleteTrainer, requestTrainerPasswordReset, resetTrainerPassword };
