@@ -17,7 +17,21 @@ const app = express();
 const port = process.env.PORT || 5000;
 // Middleware to parse incoming JSON requests
 app.use(express.json());
-app.use(cors());
+// Configure CORS to allow specific origins
+const allowedOrigins = [ process.env.ADMIN_URL, process.env.USER_URL];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser tools like curl/postman
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 // Middleware to log the endpoint of each request
 app.use((req, res, next) => {
   console.log(req.originalUrl);
