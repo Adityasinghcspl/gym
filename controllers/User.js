@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User, validateUser, validateUserUpdate } from '../models/userModel.js';
+import { User, validateUser, validateUserUpdate } from '../models/User.js';
 import CryptoJS from "crypto-js";
-import Token from "../models/token.js";
+import Token from "../models/Token.js";
 import sendEmail from "../utils/sendEmail.js";
 import Joi from "joi";
 

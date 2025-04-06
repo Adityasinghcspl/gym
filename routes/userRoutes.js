@@ -1,6 +1,6 @@
 import express from 'express';
 import { authorizeAdmin, validateToken } from '../middleware/validateTokenHandler.js';
-import { registerUser, currentUser, loginUser, getAllUsers, getUser, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword } from '../controllers/userController.js';
+import { registerUser, currentUser, loginUser, getAllUsers, getUser, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword } from '../controllers/User.js';
 
 const router = express.Router();
 
