@@ -35,7 +35,7 @@ export const getAllTrainers = createAsyncThunk<trainer[], void>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while fetching trainers.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while fetching trainers.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -57,7 +57,7 @@ export const getTrainer = createAsyncThunk<trainer, string>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while getting the trainer.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while getting the trainer.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -79,7 +79,7 @@ export const deleteTrainer = createAsyncThunk<any, string>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while deleting trainer.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while deleting trainer.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -101,7 +101,7 @@ export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: tr
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the trainer.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while updating the trainer.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -123,7 +123,7 @@ export const updateTrainerPassword = createAsyncThunk<any, { id: string; newPass
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the trainer.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while updating the trainer.';
       return rejectWithValue(errorMessage);
     }
   }

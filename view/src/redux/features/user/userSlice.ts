@@ -35,7 +35,7 @@ export const getAllUsers = createAsyncThunk<User[], void>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while fetching users.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while fetching users.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -57,7 +57,7 @@ export const getUser = createAsyncThunk<User, string>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while getting the user.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while getting the user.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -79,7 +79,7 @@ export const deleteUser = createAsyncThunk<any, string>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while deleting user.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while deleting user.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -101,7 +101,7 @@ export const updateUser = createAsyncThunk<any, { id: string; userData: User }>(
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the user.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);
     }
   }
@@ -123,7 +123,7 @@ export const updateUserPassword = createAsyncThunk<any, { id: string; newPasswor
       return data; // Return the data retrieved
     } catch (error: any) {
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.message || 'An error occurred while updating the user.';
+      const errorMessage = error?.response?.data?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);
     }
   }
