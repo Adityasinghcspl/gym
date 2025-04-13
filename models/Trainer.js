@@ -22,6 +22,7 @@ const trainerSchema = mongoose.Schema(
     },
     role: {
       type: String,
+      enum: ["admin", "trainer"],
       required: [true, "Please set the role"]
     },
     bio: {

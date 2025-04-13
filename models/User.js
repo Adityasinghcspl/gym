@@ -23,11 +23,17 @@ const userSchema = mongoose.Schema(
     role: {
       type: String,
       required: [true, "Please set the role"],
+      enum: ["user"], // only user role allowed in this collection
     },
     address: {
       type: String,
       default: "",
     },
+    membershipId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Membership",
+      default: null
+    }
   },
   {
     timestamps: true,

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-// import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo.png';
 import Logo from '../../images/logo/logo.png';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -46,9 +45,7 @@ const SignUp: React.FC = () => {
 
   return (
     <>
-      {/* <Breadcrumb pageName="Sign Up" /> */}
-
-      <div className="rounded-sm border border-stroke bg-white h-full shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="rounded-sm border border-stroke bg-white h-screen shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">

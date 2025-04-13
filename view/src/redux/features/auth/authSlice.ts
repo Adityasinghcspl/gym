@@ -41,11 +41,9 @@ export const signInTrainer = createAsyncThunk<AccessToken, SignInTrainerForm>(
       if (!response || !response.accessToken) {
         return rejectWithValue("Invalid response from server");
       }
-
       return response; // Return only necessary data
     } catch (error: any) {
-      console.log(error);
-      return rejectWithValue(error?.message || "Login failed");
+      return rejectWithValue(error?.response?.data?.message || "Login failed");
     }
   }
 );
@@ -61,7 +59,7 @@ export const signUpTrainer = createAsyncThunk<{ message: string }, SignUpUserFor
         .post<{ message: string }>(RESTServerRoute.REST_SIGNUP_TRAINER, signUpData);
       return response; // Return only necessary data
     } catch (error: any) {
-      return rejectWithValue(error?.message || "SignUp failed");
+      return rejectWithValue(error?.response?.data?.message || "SignUp failed");
     }
   }
 );
@@ -77,7 +75,7 @@ export const trainerSendResetPasswordLink = createAsyncThunk<{ message: string }
         .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_TRAINER, {email: email});
       return response; // Return only necessary data
     } catch (error: any) {
-      return rejectWithValue(error?.message);
+      return rejectWithValue(error?.response?.data?.message);
     }
   }
 );
@@ -93,7 +91,7 @@ export const trainerResetPassword = createAsyncThunk<{ message: string }, { id: 
         .post<{ message: string }>(RESTServerRoute.REST_RESET_PASSWORD_TRAINER(id, token), {password: password});
       return response; // Return only necessary data
     } catch (error: any) {
-      return rejectWithValue(error?.message);
+      return rejectWithValue(error?.response?.data?.message);
     }
   }
 );
@@ -109,7 +107,7 @@ export const userSendResetPasswordLink = createAsyncThunk<{ message: string }, s
         .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_USER, email);
       return response; // Return only necessary data
     } catch (error: any) {
-      return rejectWithValue(error?.message);
+      return rejectWithValue(error?.response?.data?.message);
     }
   }
 );

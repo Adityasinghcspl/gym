@@ -37,7 +37,7 @@ export default function EditFormModal({ entityType, open, onClose, onConfirm, in
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 mt-10">
       <div className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-2xl shadow-2xl w-full max-w-lg p-8">
         <div className="flex justify-between items-center mb-5">
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Edit {entityType}</h3>
@@ -111,13 +111,13 @@ export default function EditFormModal({ entityType, open, onClose, onConfirm, in
             </div>
           )}
           <div className="flex justify-end gap-4">
-            <button
+            {/* <button
               type="button"
               onClick={onClose}
               className="px-4 py-2 border rounded text-gray-700 dark:text-gray-300"
             >
               Cancel
-            </button>
+            </button> */}
             <button
               type="submit"
               disabled={!isDirty}
