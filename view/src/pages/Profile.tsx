@@ -21,8 +21,6 @@ const Profile = () => {
     dispatch(getTrainer(userId));
   }, [dispatch, userId]);
 
-  if (trainerState.loading) return <Loader />;
-
   if (trainerState.error) {
     toast.dismiss();
     toast.error(trainerState.error);
@@ -33,6 +31,11 @@ const Profile = () => {
       <Breadcrumb pageName="Profile" />
 
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        {trainerState.loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-black/50 z-40">
+            <Loader />
+          </div>
+        )}
         <div className="relative z-20 h-35 md:h-65">
           <img
             src={CoverOne}

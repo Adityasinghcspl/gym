@@ -56,8 +56,6 @@ const Settings = () => {
       watchedFields.email !== trainerState.data.email ||
       watchedFields.bio !== trainerState.data.bio);
 
-  if (trainerState.loading) return <Loader />;
-
   if (trainerState.error) {
     toast.dismiss();
     toast.error(trainerState.error);
@@ -78,6 +76,11 @@ const Settings = () => {
         <Breadcrumb pageName="Settings" />
 
         <div className="grid grid-cols-5 gap-8">
+          {trainerState.loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-black/50 z-40">
+              <Loader />
+            </div>
+          )}
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
