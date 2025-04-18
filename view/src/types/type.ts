@@ -12,8 +12,9 @@ export type SignUpTrainerForm = {
   name: string;
   email: string;
   phone_no: number;
+  bio?: string;
   password: string;
-  retype_password: string;
+  retype_password?: string;
 };
 
 export type ResetPasswordForm = {
