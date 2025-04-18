@@ -8,12 +8,12 @@ import { getTokenData, isAdmin } from '../../utils/Utils';
 import { toast } from 'react-toastify';
 import DeleteModal from '../Modal/DeleteModal';
 import { trainer } from '../../types/type';
-import EditFormModal from '../Modal/EditFormModel';
+import CreateAndEditFormModel from '../Modal/CreateAndEditFormModel';
 
 const Trainers = () => {
   const admin = isAdmin();
   const dispatch = useDispatch<AppDispatch>();
-  const trainers = useSelector((state: RootState) => state.trainer.trainersList);
+  const trainers = useSelector((state: RootState) => state.trainer?.trainersList);
   const [selectedTrainerId, setSelectedTrainerId] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -60,15 +60,12 @@ const Trainers = () => {
     dispatch(getAllTrainers()); // Dispatch the API call when component mounts
   }, [dispatch]); // Runs only on mount
 
-  if (trainers.error) {
-    toast.dismiss(); // dismiss previous toasts
-    toast.error(trainers.error, {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      theme: 'light',
-    });
-  }
+  useEffect(() => {
+    if (trainers.error) {
+      toast.dismiss(); // optional: clear old toasts
+      toast.error(trainers.error);
+    }
+  }, [trainers.error]);
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -159,7 +156,7 @@ const Trainers = () => {
         />
         {/* Edit Form Modal */}
         {selectedTrainer && (
-          <EditFormModal
+          <CreateAndEditFormModel
             entityType="Trainer"
             open={isEditOpen}
             onClose={() => setIsEditOpen(false)}

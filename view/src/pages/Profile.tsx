@@ -21,10 +21,12 @@ const Profile = () => {
     dispatch(getTrainer(userId));
   }, [dispatch, userId]);
 
-  if (trainerState.error) {
-    toast.dismiss();
-    toast.error(trainerState.error);
-  }
+  useEffect(() => {
+    if (trainerState.error) {
+      toast.dismiss();
+      toast.error(trainerState.error);
+    }
+  }, [trainerState.error]);
 
   return (
     <>
