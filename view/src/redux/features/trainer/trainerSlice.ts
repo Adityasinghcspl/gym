@@ -4,6 +4,7 @@ import { RESTServerRoute } from "../../../types/server";
 import { trainerState } from "../../../types/slice";
 import config from "../../../config/config";
 import { trainer } from "../../../types/type";
+import { logout } from "../auth/authSlice";
 
 const initialState: trainerState = {
   trainersList: {
@@ -21,7 +22,7 @@ const initialState: trainerState = {
 // Define an async thunk for get all trainer
 export const getAllTrainers = createAsyncThunk<trainer[], void>(
   'trainer/getAllTrainer',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -34,8 +35,11 @@ export const getAllTrainers = createAsyncThunk<trainer[], void>(
         .get<trainer[]>(RESTServerRoute.REST_All_TRAINERS); // Expecting an array of trainers
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
-      const errorMessage = error?.response?.data?.message || 'An error occurred while fetching trainers.';
+      const errorMessage = error?.response?.data?.message || error.message;
       return rejectWithValue(errorMessage);
     }
   }
@@ -44,7 +48,7 @@ export const getAllTrainers = createAsyncThunk<trainer[], void>(
 // Define an async thunk for get trainer
 export const getTrainer = createAsyncThunk<trainer, string>(
   'trainer/getTrainer',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -56,6 +60,9 @@ export const getTrainer = createAsyncThunk<trainer, string>(
         .get<trainer>(RESTServerRoute.REST_TRAINER(id));
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while getting the trainer.';
       return rejectWithValue(errorMessage);
@@ -66,7 +73,7 @@ export const getTrainer = createAsyncThunk<trainer, string>(
 // Define an async thunk for delete trainer
 export const deleteTrainer = createAsyncThunk<any, string>(
   'trainer/deleteTrainer',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -78,6 +85,9 @@ export const deleteTrainer = createAsyncThunk<any, string>(
         .delete<any>(RESTServerRoute.REST_DELETE_TRAINER(id)); // Expecting an array of trainers
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while deleting trainer.';
       return rejectWithValue(errorMessage);
@@ -88,7 +98,7 @@ export const deleteTrainer = createAsyncThunk<any, string>(
 // Define an async thunk for update trainer
 export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: trainer }>(
   'trainer/updateTrainer',
-  async ({ id, trainerData }, { rejectWithValue }) => {
+  async ({ id, trainerData }, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -100,6 +110,9 @@ export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: tr
         .patch<any>(RESTServerRoute.REST_UPDATE_TRAINER(id), trainerData);
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while updating the trainer.';
       return rejectWithValue(errorMessage);
@@ -110,7 +123,7 @@ export const updateTrainer = createAsyncThunk<any, { id: string; trainerData: tr
 // Define an async thunk for update trainer password using admin
 export const updateTrainerPassword = createAsyncThunk<any, { id: string; newPassword: string }>(
   'trainer/updateTrainerPassword',
-  async ({ id, newPassword }, { rejectWithValue }) => {
+  async ({ id, newPassword }, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -122,6 +135,9 @@ export const updateTrainerPassword = createAsyncThunk<any, { id: string; newPass
         .patch<any>(RESTServerRoute.REST_UPDATE_PASSWORD_TRAINER(id), newPassword);
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while updating the trainer.';
       return rejectWithValue(errorMessage);

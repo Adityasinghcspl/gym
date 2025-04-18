@@ -123,9 +123,9 @@ const authSlice = createSlice({
       state.signInUser.error = null;
       state.signUpUser.error = null;
     },
-    logout: (state) => {
+    logout: () => {
       localStorage.removeItem("accessToken");
-      state.signInTrainer.data = null;
+      window.dispatchEvent(new Event("storage"));
     }
   },
   extraReducers: (builder) => {
