@@ -24,4 +24,11 @@ export const RESTServerRoute = {
 	REST_RESET_PASSWORD_USER : (id: string, token: string) => `/api/user/password-reset/${id}/${token}`,
 	REST_UPDATE_PASSWORD_USER: (id: string) => `api/user/update/password/${id}`,
 
+	// MemberShip Routes
+	REST_All_MEMBERSHIPS: 'api/membership',
+	REST_CREATE_MEMBERSHIP: "api/membership", // POST
+	REST_MEMBERSHIP_BY_ID: (id: string) => `api/membership/${id}`, // GET one
+	REST_UPDATE_MEMBERSHIP: (id: string) => `api/membership/${id}`, // PUT
+	REST_DELETE_MEMBERSHIP: (id: string) => `api/membership/${id}`  // DELETE
+
 }
