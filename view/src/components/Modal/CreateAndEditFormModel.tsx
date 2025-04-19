@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { MdClose } from 'react-icons/md';
 import { trainer, User } from '../../types/type';
 
-interface EditFormModalProps {
+interface CreateAndEditFormModelProps {
   entityType: 'Trainer' | 'User';
   open: boolean;
   onClose: () => void;
@@ -11,7 +11,13 @@ interface EditFormModalProps {
   initialData?: trainer | User;
 }
 
-export default function EditFormModal({ entityType, open, onClose, onConfirm, initialData }: EditFormModalProps) {
+export default function CreateAndEditFormModel({
+  entityType,
+  open,
+  onClose,
+  onConfirm,
+  initialData,
+}: CreateAndEditFormModelProps) {
   const {
     register,
     handleSubmit,
@@ -40,7 +46,9 @@ export default function EditFormModal({ entityType, open, onClose, onConfirm, in
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 mt-10">
       <div className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-2xl shadow-2xl w-full max-w-lg p-8">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Edit {entityType}</h3>
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            {initialData ? 'Edit' : 'Create'} {entityType}
+          </h3>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <MdClose size={24} />
           </button>

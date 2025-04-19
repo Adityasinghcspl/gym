@@ -60,7 +60,7 @@ const validateUser = (data) => {
         "number.max": "Phone number must be exactly 10 digits",
       }),
     password: Joi.string().min(6).required(),
-    role: Joi.string().valid("user").required(),
+    role: Joi.string().valid("user"),
     address: Joi.string().max(100).allow(""), // Optional
   });
   return schema.validate(data);

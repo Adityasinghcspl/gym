@@ -56,10 +56,12 @@ const Settings = () => {
       watchedFields.email !== trainerState.data.email ||
       watchedFields.bio !== trainerState.data.bio);
 
-  if (trainerState.error) {
-    toast.dismiss();
-    toast.error(trainerState.error);
-  }
+  useEffect(() => {
+    if (trainerState.error) {
+      toast.dismiss();
+      toast.error(trainerState.error);
+    }
+  }, [trainerState.error]);
 
   const onSubmit: SubmitHandler<trainer> = async (data) => {
     try {

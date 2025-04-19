@@ -6,7 +6,7 @@ import { MdDelete, MdFileCopy, MdModeEdit } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import DeleteModal from '../Modal/DeleteModal';
 import { User } from '../../types/type';
-import EditFormModal from '../Modal/EditFormModel';
+import CreateAndEditFormModel from '../Modal/CreateAndEditFormModel';
 import { deleteUser, getAllUsers, updateUser } from '../../redux/features/user/userSlice';
 
 const Users = () => {
@@ -55,15 +55,12 @@ const Users = () => {
     dispatch(getAllUsers()); // Dispatch the API call when component mounts
   }, [dispatch]); // Runs only on mount
 
-  if (users.error) {
-    toast.dismiss(); // dismiss previous toasts
-    toast.error(users.error, {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      theme: 'light',
-    });
-  }
+  useEffect(() => {
+    if (users.error) {
+      toast.dismiss(); // dismiss previous toasts
+      toast.error(users.error);
+    }
+  }, [users.error]);
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -151,7 +148,7 @@ const Users = () => {
         />
         {/* Edit Form Modal */}
         {selectedUser && (
-          <EditFormModal
+          <CreateAndEditFormModel
             entityType="User"
             open={isEditOpen}
             onClose={() => setIsEditOpen(false)}

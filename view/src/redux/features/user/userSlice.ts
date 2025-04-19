@@ -4,6 +4,7 @@ import { RESTServerRoute } from "../../../types/server";
 import { UserState } from "../../../types/slice";
 import config from "../../../config/config";
 import { User } from "../../../types/type";
+import { logout } from "../auth/authSlice";
 
 const initialState: UserState = {
   userList: {
@@ -21,7 +22,7 @@ const initialState: UserState = {
 // Define an async thunk for get all user
 export const getAllUsers = createAsyncThunk<User[], void>(
   'user/getAllUser',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -34,6 +35,9 @@ export const getAllUsers = createAsyncThunk<User[], void>(
         .get<User[]>(RESTServerRoute.REST_All_USERS); // Expecting an array of users
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while fetching users.';
       return rejectWithValue(errorMessage);
@@ -44,7 +48,7 @@ export const getAllUsers = createAsyncThunk<User[], void>(
 // Define an async thunk for get user
 export const getUser = createAsyncThunk<User, string>(
   'user/getUser',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -56,6 +60,9 @@ export const getUser = createAsyncThunk<User, string>(
         .get<User>(RESTServerRoute.REST_USER(id));
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while getting the user.';
       return rejectWithValue(errorMessage);
@@ -66,7 +73,7 @@ export const getUser = createAsyncThunk<User, string>(
 // Define an async thunk for delete user
 export const deleteUser = createAsyncThunk<any, string>(
   'user/deleteUser',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -78,6 +85,9 @@ export const deleteUser = createAsyncThunk<any, string>(
         .delete<any>(RESTServerRoute.REST_DELETE_USER(id)); // Expecting an array of user
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while deleting user.';
       return rejectWithValue(errorMessage);
@@ -88,7 +98,7 @@ export const deleteUser = createAsyncThunk<any, string>(
 // Define an async thunk for update user
 export const updateUser = createAsyncThunk<any, { id: string; userData: User }>(
   'user/updateUser',
-  async ({ id, userData }, { rejectWithValue }) => {
+  async ({ id, userData }, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -100,6 +110,9 @@ export const updateUser = createAsyncThunk<any, { id: string; userData: User }>(
         .patch<any>(RESTServerRoute.REST_UPDATE_USER(id), userData);
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);
@@ -110,7 +123,7 @@ export const updateUser = createAsyncThunk<any, { id: string; userData: User }>(
 // Define an async thunk for update user password using admin
 export const updateUserPassword = createAsyncThunk<any, { id: string; newPassword: string }>(
   'user/updateUserPassword',
-  async ({ id, newPassword }, { rejectWithValue }) => {
+  async ({ id, newPassword }, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) throw new Error('No access token found');
@@ -122,6 +135,9 @@ export const updateUserPassword = createAsyncThunk<any, { id: string; newPasswor
         .patch<any>(RESTServerRoute.REST_UPDATE_PASSWORD_USER(id), newPassword);
       return data; // Return the data retrieved
     } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
       // Ensure error handling provides meaningful feedback
       const errorMessage = error?.response?.data?.message || 'An error occurred while updating the user.';
       return rejectWithValue(errorMessage);

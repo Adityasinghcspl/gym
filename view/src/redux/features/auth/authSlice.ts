@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AccessToken, SignInTrainerForm, SignUpUserForm } from "../../../types/type";
+import { AccessToken, SignInTrainerForm, SignUpTrainerForm } from "../../../types/type";
 import { RestClientBuilder } from "../../../utils/RestClient";
 import { RESTServerRoute } from "../../../types/server";
 import { authState } from "../../../types/slice";
@@ -49,7 +49,7 @@ export const signInTrainer = createAsyncThunk<AccessToken, SignInTrainerForm>(
 );
 
 // Define an async thunk for sign-up trainer action
-export const signUpTrainer = createAsyncThunk<{ message: string }, SignUpUserForm>(
+export const signUpTrainer = createAsyncThunk<{ message: string }, SignUpTrainerForm>(
   'trainer/register',
   async (signUpData, { rejectWithValue }) => {
     try {
@@ -123,9 +123,9 @@ const authSlice = createSlice({
       state.signInUser.error = null;
       state.signUpUser.error = null;
     },
-    logout: (state) => {
+    logout: () => {
       localStorage.removeItem("accessToken");
-      state.signInTrainer.data = null;
+      window.dispatchEvent(new Event("storage"));
     }
   },
   extraReducers: (builder) => {
