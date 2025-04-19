@@ -40,7 +40,7 @@ const Trainer = () => {
     <>
       <Breadcrumb
         pageName="Trainer"
-        leftElement={
+        RightElement={
           admin && (
             <button
               onClick={() => setIsCreateModelOpen(!isCreateModelOpen)}
