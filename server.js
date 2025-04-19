@@ -5,6 +5,8 @@ import swaggerDocs from './doc/swagger.js'
 import swaggerUi from 'swagger-ui-express';
 import userRoutes from './routes/userRoutes.js';
 import trainerRoutes from './routes/trainerRoutes.js';
+import attendanceRoutes from './routes/attendanceRoutes.js';
+import membershipRoutes from './routes/membershipRoutes.js';
 import connectDb from './config/dbConnection.js';
 import errorHandler from './middleware/errorHandler.js';
 
@@ -43,6 +45,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use("/api/user", userRoutes);
 // Define the trainer routes
 app.use("/api/trainer", trainerRoutes);
+// Define the membership routes
+app.use("/api/membership", membershipRoutes);
+// Define the attendance routes
+app.use("/api/attendance", attendanceRoutes);
 // Use the error handling middleware
 app.use(errorHandler);
 // Start the server and listen on the defined port
