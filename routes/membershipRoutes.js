@@ -5,8 +5,8 @@ import { createMembership, getAllMemberships, getMembershipById, updateMembershi
 const router = express.Router();
 
 //Access by the admin and trainer
-router.get("/", authorizeAdmin, getAllMemberships);
-router.get("/:id", authorizeAdmin, getMembershipById);
+router.get("/", validateToken, getAllMemberships);
+router.get("/:id", validateToken, getMembershipById);
 
 //Only Access by the admin
 router.post("/", validateToken, authorizeAdmin, createMembership);

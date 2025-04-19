@@ -1,4 +1,5 @@
 import { Membership, validateMembership, validateMembershipUpdate } from "../models/Membership.js";
+import { User } from '../models/User.js';
 
 // Create a new membership
 export const createMembership = async (req, res) => {
@@ -8,8 +9,9 @@ export const createMembership = async (req, res) => {
   try {
     const membership = new Membership(req.body);
     await membership.save();
-    res.status(201).json(membership);
+    res.status(201).json({ message: 'Membership created successfully' });
   } catch (err) {
+    
     res.status(500).json({ message: "Failed to create membership", error: err.message });
   }
 };
@@ -48,7 +50,7 @@ export const updateMembership = async (req, res) => {
 
     if (!membership) return res.status(404).json({ message: "Membership not found" });
 
-    res.status(200).json(membership);
+    res.status(200).json({ message: "Membership updated successfully" });
   } catch (err) {
     res.status(500).json({ message: "Failed to update membership", error: err.message });
   }
@@ -57,10 +59,13 @@ export const updateMembership = async (req, res) => {
 // Delete a membership
 export const deleteMembership = async (req, res) => {
   const membershipId = req.params.id;
-
+  // Validate the provided id
+  if (!membershipId) {
+    return res.status(400).json({ message: "Membership ID is required" });
+  }
   try {
     // Check if any users are using this membership
-    const usersUsingMembership = await User.find({ membershipId });
+    const usersUsingMembership = await User.find({ membershipId: membershipId });
 
     if (usersUsingMembership.length > 0) {
       return res.status(400).json({
@@ -69,7 +74,7 @@ export const deleteMembership = async (req, res) => {
     }
 
     // Proceed with deletion
-    const deleted = await Membership.findByIdAndDelete(membershipId);
+    const deleted = await Membership.findByIdAndDelete(membershipId).exec();
     if (!deleted) {
       return res.status(404).json({ message: "Membership not found" });
     }
