@@ -66,6 +66,16 @@ export interface User {
   updatedAt: string;
 }
 
+export interface Membership {
+  _id?: string;
+  type: "Monthly" | "Quarterly" | "Half-Yearly" | "Yearly";
+  price: number;
+  durationInMonths: number;
+  features: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // Define a custom interface for the expected token structure
 export interface CustomJwtPayload extends JwtPayload {
   name: string;
