@@ -31,6 +31,7 @@ export type SignUpUserForm = {
   name: string;
   email: string;
   phone_no: number;
+  address?: string;
   password: string;
   retype_password: string;
 };
