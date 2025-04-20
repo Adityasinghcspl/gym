@@ -1,22 +1,30 @@
-import { Attendance, validateAttendance, validateAttendanceUpdate } from "../models/Attendance.js";
+import { Attendance, validateAttendance } from "../models/Attendance.js";
 import { User } from "../models/User.js";
+
+// Helper to normalize date to midnight
+const getTodayDate = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
 
 // Create new attendance (Check-in)
 export const markCheckIn = async (req, res) => {
   const { error } = validateAttendance(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  const { userId, checkIn, date } = req.body;
+  const { userId, checkIn } = req.body;
+  const today = getTodayDate();
 
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Check if attendance already exists for this user and date
-    const existing = await Attendance.findOne({ userId, date });
-    if (existing) return res.status(400).json({ message: "Attendance already marked for this date" });
+    // Check if attendance already exists for today
+    const existing = await Attendance.findOne({ userId, date: today });
+    if (existing) return res.status(400).json({ message: "Attendance already marked for today" });
 
-    const attendance = new Attendance({ userId, checkIn, date });
+    const attendance = new Attendance({ userId, checkIn, date: today });
     await attendance.save();
 
     res.status(201).json({ message: "Check-in marked successfully", data: attendance });
@@ -27,16 +35,17 @@ export const markCheckIn = async (req, res) => {
 
 // Update attendance (Check-out)
 export const markCheckOut = async (req, res) => {
-  const { userId, date, checkOut } = req.body;
+  const { userId, checkOut } = req.body;
+  const today = getTodayDate();
 
   try {
     const attendance = await Attendance.findOneAndUpdate(
-      { userId, date },
+      { userId, date: today },
       { checkOut },
       { new: true }
     );
 
-    if (!attendance) return res.status(404).json({ message: "Attendance not found" });
+    if (!attendance) return res.status(404).json({ message: "Attendance not found for today" });
 
     res.status(200).json({ message: "Check-out marked successfully", data: attendance });
   } catch (err) {
