@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { isAuthenticated } from '../utils/Utils';
 import User from '../pages/User';
 import ResetPassword from '../pages/Authentication/ResetPassword';
+import MemberShip from '../pages/MemberShip';
 
 export default function DashboardRoutes() {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
@@ -118,6 +119,15 @@ export default function DashboardRoutes() {
               <>
                 <PageTitle title="Settings | Admin Dashboard" />
                 <Settings />
+              </>
+            }
+          />
+          <Route
+            path="/membership"
+            element={
+              <>
+                <PageTitle title="MemberShip | Admin Dashboard" />
+                <MemberShip />
               </>
             }
           />

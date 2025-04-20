@@ -31,6 +31,7 @@ export type SignUpUserForm = {
   name: string;
   email: string;
   phone_no: number;
+  address?: string;
   password: string;
   retype_password: string;
 };
@@ -64,6 +65,16 @@ export interface User {
   role: Role;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Membership {
+  _id?: string;
+  type: "Monthly" | "Quarterly" | "Half-Yearly" | "Yearly";
+  price: number;
+  durationInMonths: number;
+  features: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Define a custom interface for the expected token structure

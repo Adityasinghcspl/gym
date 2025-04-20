@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { useEffect, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 import { deleteTrainer, getAllTrainers, updateTrainer } from '../../redux/features/trainer/trainerSlice';
 import Loader from '../../common/Loader';
 import { MdDelete, MdFileCopy, MdModeEdit } from 'react-icons/md';
@@ -87,7 +87,7 @@ const Trainers = () => {
             </tr>
           </thead>
           <tbody>
-            {trainers.data?.map((trainer, key) => (
+            {trainers.data?.map((trainer: trainer, key: Key | null | undefined) => (
               <tr key={key}>
                 {admin && (
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
