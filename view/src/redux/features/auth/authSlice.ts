@@ -140,7 +140,7 @@ export const userSendResetPasswordLink = createAsyncThunk<{ message: string }, s
       const response = await RestClientBuilder.instance()
         .withBaseUrl(config.API_REST_ENDPOINT)
         .build()
-        .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_USER, email);
+        .post<{ message: string }>(RESTServerRoute.REST_SEND_RESET_PASSWORD_LINK_USER, {email: email});
       return response; // Return only necessary data
     } catch (error: any) {
       return rejectWithValue(error?.response?.data?.message);

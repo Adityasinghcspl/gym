@@ -50,12 +50,6 @@ const Home = () => {
                     Be <strong className="text-[#f36100]">strong</strong> <br />
                     training hard
                   </h1>
-                  <a
-                    href="#"
-                    className="mt-6 inline-block bg-orange-500 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 transition duration-300"
-                  >
-                    Get Info
-                  </a>
                 </motion.div>
               </div>
             </div>
@@ -93,7 +87,7 @@ const Home = () => {
       {/* Get In Touch Section End  */}
 
       {/* Footer Section Begin */}
-      <Footer/>
+      <Footer />
       {/* Footer Section End */}
     </>
   );

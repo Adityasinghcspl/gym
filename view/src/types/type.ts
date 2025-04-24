@@ -41,7 +41,7 @@ export type SignInUserForm = {
   password: string;
 };
 
-export type AccessToken ={
+export type AccessToken = {
   accessToken: string;
 }
 
@@ -83,4 +83,31 @@ export interface CustomJwtPayload extends JwtPayload {
   email: string;
   id: string;
   role: string;
+}
+
+export interface Attendance {
+  _id?: string;
+  userId: string;
+  date?: string; // ISO string (auto from backend)
+  checkIn?: string; // ISO string
+  checkOut?: string; // ISO string
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AttendanceListState {
+  data: Attendance[] | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface AttendanceItemState {
+  data: Attendance | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface AttendanceState {
+  attendanceList: AttendanceListState;
+  attendance: AttendanceItemState;
 }

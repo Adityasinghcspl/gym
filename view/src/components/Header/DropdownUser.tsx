@@ -14,7 +14,6 @@ const DropdownUser = () => {
 
   const handleLogout = () => {
     dispatch(logout()); // Call logout action
-    window.dispatchEvent(new Event("storage"));
     navigate("/auth/signin"); // Redirect to sign-in page
   };
 
