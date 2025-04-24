@@ -9,26 +9,11 @@ import Gallery from '../../components/Gallery/Gallery';
 import GymTeam from '../../components/GymTeam/GymTeam';
 import GetInTouch from '../../components/GetInTouch/GetInTouch';
 import Footer from '../../components/Footer/Footer';
-import { Link } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/Utils';
 
 const images = ['/img/hero/hero-1.jpg', '/img/hero/hero-2.jpg'];
 
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
-
-  // useEffect(() => {
-  //   const handleAuthChange = () => {
-  //     setIsAuthorized(isAuthenticated());
-  //   };
-
-  //   window.addEventListener('storage', handleAuthChange);
-
-  //   return () => {
-  //     window.removeEventListener('storage', handleAuthChange);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,14 +50,6 @@ const Home = () => {
                     Be <strong className="text-[#f36100]">strong</strong> <br />
                     training hard
                   </h1>
-                  {/* {!isAuthorized && (
-                    <Link
-                      to="/login"
-                      className="mt-6 inline-block bg-orange-500 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 transition duration-300"
-                    >
-                      Log In
-                    </Link>
-                  )} */}
                 </motion.div>
               </div>
             </div>
