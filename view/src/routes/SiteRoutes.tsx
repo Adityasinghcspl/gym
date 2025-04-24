@@ -6,12 +6,42 @@ import About from '../pages/About/About';
 import Service from '../pages/Service/Services';
 import OurTeam from '../pages/OurTeam/OurTeam';
 import Contact from '../pages/Contact/Contact';
+import SiteLogin from '../pages/Authentication/SiteLogin';
+import BookAppointment from '../pages/BookAppointment/BookAppointment';
+import SiteResetPassword from '../pages/Authentication/SiteResetPassword';
 
 export default function SiteRoutes() {
   return (
     <>
       <DefaultSiteLayout>
         <Routes>
+          <Route
+            path="/login"
+            element={
+              <>
+                <PageTitle title="LogIn" />
+                <SiteLogin />
+              </>
+            }
+          />
+          <Route
+            path="/appointment"
+            element={
+              <>
+                <PageTitle title="Book Appointment" />
+                <BookAppointment />
+              </>
+            }
+          />
+          <Route
+            path="/api/user/password-reset/:userId/:token"
+            element={
+              <>
+                <PageTitle title="Reset Password" />
+                <SiteResetPassword />
+              </>
+            }
+          />
           <Route
             index
             element={
@@ -22,7 +52,6 @@ export default function SiteRoutes() {
             }
           />
           <Route
-            index
             path="/about-us"
             element={
               <>
@@ -32,7 +61,6 @@ export default function SiteRoutes() {
             }
           />
           <Route
-            index
             path="/services"
             element={
               <>
@@ -42,7 +70,6 @@ export default function SiteRoutes() {
             }
           />
           <Route
-            index
             path="/our-team"
             element={
               <>
@@ -52,7 +79,6 @@ export default function SiteRoutes() {
             }
           />
           <Route
-            index
             path="/contact-us"
             element={
               <>
