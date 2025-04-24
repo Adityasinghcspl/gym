@@ -1,8 +1,13 @@
+import { useNavigate } from 'react-router-dom';
+import { isAuthenticated } from '../../utils/Utils';
+
 export default function Pricing() {
+  const navigate = useNavigate();
+
   const pricingPlans = [
     {
       title: 'Class Drop-in',
-      price: '$39.0',
+      price: '₹800',
       duration: 'Single Class',
       features: [
         'Free riding',
@@ -14,9 +19,9 @@ export default function Pricing() {
       ],
     },
     {
-      title: '12 Month Unlimited',
-      price: '$99.0',
-      duration: 'Single Class',
+      title: '3 Month Unlimited',
+      price: '₹2,000',
+      duration: '3 Months',
       features: [
         'Free riding',
         'Unlimited equipments',
@@ -28,8 +33,21 @@ export default function Pricing() {
     },
     {
       title: '6 Month Unlimited',
-      price: '$59.0',
-      duration: 'Single Class',
+      price: '₹4,800',
+      duration: '6 Months',
+      features: [
+        'Free riding',
+        'Unlimited equipments',
+        'Personal trainer',
+        'Weight losing classes',
+        'Month to mouth',
+        'No time restriction',
+      ],
+    },
+    {
+      title: '12 Month Unlimited',
+      price: '₹8,000',
+      duration: '12 Months',
       features: [
         'Free riding',
         'Unlimited equipments',
@@ -41,16 +59,24 @@ export default function Pricing() {
     },
   ];
 
+  const handleEnrollClick = () => {
+    if (!isAuthenticated()) {
+      navigate('/login');
+    } else {
+      navigate('/payment');
+    }
+  };
+
   return (
     <section className="bg-[#151515] py-20">
-      <div className="container mx-auto px-8 sm:px-10 lg:px-20 xl:px-40">
+      <div className="container mx-auto sm:px-10 lg:px-0 xl:px-20">
         {/* Section Title */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-20">
           <span className="text-lg font-semibold text-orange-500 uppercase">Our Plan</span>
           <h2 className="text-4xl font-extrabold mt-3 text-white uppercase">Choose your pricing plan</h2>
         </div>
         {/* Pricing Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
           {pricingPlans.map((plan, index) => (
             <div
               key={index}
@@ -62,31 +88,24 @@ export default function Pricing() {
               </h3>
               {/* Price */}
               <div className="pi-price mb-6 skew-y-[4deg]">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl text-orange-500 font-semibold">{plan.price}</h2>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-orange-500 font-semibold">{plan.price}</h2>
                 <span className="text-gray-400 text-lg font-bold uppercase">{plan.duration}</span>
               </div>
               {/* Features List */}
               <ul className="mb-8 skew-y-[4deg]">
                 {plan.features.map((feature, i) => (
-                  <li key={i} className="text-gray-400 text-sm leading-8 transition-all duration-500 hover:text-black ">
+                  <li key={i} className="text-gray-400 text-sm leading-8 transition-all duration-500 hover:text-black">
                     {feature}
                   </li>
                 ))}
               </ul>
               {/* Enroll Button */}
-              <a
-                href="#"
-                className="primary-btn block bg-gray-700 text-white px-6 py-3 font-bold uppercase rounded-md transition-all duration-500 hover:bg-orange-600 skew-y-[4deg]"
+              <button
+                onClick={handleEnrollClick}
+                className="w-full text-center bg-gray-800 text-white py-3 font-bold uppercase rounded-md transition-all duration-300 hover:bg-orange-600 skew-y-[4deg]"
               >
                 Enroll Now
-              </a>
-              {/* Icon */}
-              <a
-                href="#"
-                className="thumb-icon absolute left-12 bottom-28 text-5xl text-orange-500 opacity-0 transition-all duration-500 hover:opacity-100"
-              >
-                <i className="fa fa-picture-o"></i>
-              </a>
+              </button>
             </div>
           ))}
         </div>
