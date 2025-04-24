@@ -47,9 +47,9 @@ export default function Classes() {
                 <h5 className="text-white text-2xl font-semibold mt-2">{item.title}</h5>
 
                 {/* Arrow Button */}
-                <a href="#" className="arrow-btn absolute bottom-4 right-4">
+                {/* <a href="#" className="arrow-btn absolute bottom-4 right-4">
                   <i className="fa fa-angle-right text-white text-2xl"></i>
-                </a>
+                </a> */}
               </div>
             </div>
           ))}
