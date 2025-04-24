@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Banner() {
   return (
     <>
@@ -14,12 +16,12 @@ export default function Banner() {
           <div className="text-lg sm:text-xl text-gray-300 font-semibold uppercase mb-8">
             Where health, beauty, and fitness meet.
           </div>
-          <a
-            href="#"
+          <Link
+            to="/appointment"
             className="inline-block border-2 border-orange-500 text-orange-500 px-8 py-3 rounded-lg text-lg font-semibold uppercase transition duration-300 hover:bg-orange-500 hover:text-white"
           >
             Appointment
-          </a>
+          </Link>
         </div>
       </section>
     </>
