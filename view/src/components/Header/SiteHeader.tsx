@@ -120,9 +120,9 @@ export default function SiteHeader(_props: {
                 Pages
               </button>
               <div className="absolute left-0 top-full mt-2 bg-gray-900 text-white w-44 p-3 rounded-lg z-50 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-300">
-                <Link to="/class-timetable" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
+                {/* <Link to="/class-timetable" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
                   Classes Timetable
-                </Link>
+                </Link> */}
                 <Link to="/bmi-calculator" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
                   BMI Calculator
                 </Link>
@@ -186,9 +186,9 @@ export default function SiteHeader(_props: {
           <Link to="/about-us" onClick={handleLinkClick} className="block py-2">
             About Us
           </Link>
-          <Link to="/class-timetable" onClick={handleLinkClick} className="block py-2">
+          {/* <Link to="/class-timetable" onClick={handleLinkClick} className="block py-2">
             Classes Timetable
-          </Link>
+          </Link> */}
           <Link to="/services" onClick={handleLinkClick} className="block py-2">
             Services
           </Link>
