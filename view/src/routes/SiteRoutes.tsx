@@ -9,8 +9,26 @@ import Contact from '../pages/Contact/Contact';
 import SiteLogin from '../pages/Authentication/SiteLogin';
 import BookAppointment from '../pages/BookAppointment/BookAppointment';
 import SiteResetPassword from '../pages/Authentication/SiteResetPassword';
+import BMICalculator from '../pages/BMICalculator/BMICalculator';
+import Exercise from '../pages/Exercises/Exercise';
+import { useEffect, useState } from 'react';
+import { isAuthenticated } from '../utils/Utils';
+import NotFound from '../pages/NotFound/NotFound';
 
 export default function SiteRoutes() {
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setIsAuthorized(isAuthenticated());
+    };
+
+    window.addEventListener('storage', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleAuthChange);
+    };
+  }, []);
   return (
     <>
       <DefaultSiteLayout>
@@ -87,6 +105,30 @@ export default function SiteRoutes() {
               </>
             }
           />
+          {isAuthorized ? (
+            <>
+              <Route
+                path="/bmi-calculator"
+                element={
+                  <>
+                    <PageTitle title="BMI-Calculator" />
+                    <BMICalculator />
+                  </>
+                }
+              />
+              <Route
+                path="/exercise"
+                element={
+                  <>
+                    <PageTitle title="Exercise" />
+                    <Exercise />
+                  </>
+                }
+              />
+            </>
+          ) : null}
+          {/* 404 Page Route (always at the bottom) */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </DefaultSiteLayout>
     </>
