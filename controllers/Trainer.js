@@ -226,10 +226,10 @@ const resetTrainerPassword = async (req, res) => {
     const schema = Joi.object({ password: Joi.string().min(6).required() });
     const { error } = schema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
-    
+
     const trainer = await Trainer.findById(req.params.userId);
     if (!trainer) return res.status(400).json({ message: "Invalid link or expired" });
-    
+
     const token = await Token.findOne({ userId: trainer._id, token: req.params.token });
     if (!token) return res.status(400).json({ message: "Invalid link or expired" });
 
