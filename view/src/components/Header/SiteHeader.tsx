@@ -30,6 +30,7 @@ export default function SiteHeader(_props: {
         setUser(userData);
       } else {
         setUser(null);
+        setLoginClicked(false);
       }
     };
 
@@ -39,7 +40,7 @@ export default function SiteHeader(_props: {
     return () => {
       window.removeEventListener('storage', handleAuthChange);
     };
-  }, []);
+  }, [pathname]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -60,9 +61,9 @@ export default function SiteHeader(_props: {
       <div className="container mx-auto flex items-center justify-between relative">
         {/* Logo */}
         <div className="logo absolute left-4 lg:static">
-          <a href="#">
+          <Link to="#">
             <img src="img/logo.png" alt="Logo" className="h-10" />
-          </a>
+          </Link>
         </div>
 
         {/* Centered Navigation */}
@@ -86,21 +87,15 @@ export default function SiteHeader(_props: {
             <div className="relative group">
               <button className="hover:text-orange-500 uppercase">Pages</button>
               <div className="absolute left-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white w-44 p-3 rounded-lg z-50">
-                <a href="./class-timetable.html" className="block py-1 hover:text-orange-500">
+                <Link to="./class-timetable.html" className="block py-1 hover:text-orange-500">
                   Classes timetable
-                </a>
-                <a href="./bmi-calculator.html" className="block py-1 hover:text-orange-500">
+                </Link>
+                <Link to="/bmi-calculator" className="block py-1 hover:text-orange-500">
                   BMI Calculator
-                </a>
-                <a href="./gallery.html" className="block py-1 hover:text-orange-500">
-                  Gallery
-                </a>
-                <a href="./blog.html" className="block py-1 hover:text-orange-500">
-                  Our Blog
-                </a>
-                <a href="./404.html" className="block py-1 hover:text-orange-500">
-                  404
-                </a>
+                </Link>
+                <Link to="/exercise" className="block py-1 hover:text-orange-500">
+                  Exercise
+                </Link>
               </div>
             </div>
           ) : null}
