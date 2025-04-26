@@ -1,23 +1,36 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
-
-type AppointmentForm = {
-  name: string;
-  email: string;
-  phone: string;
-  date: string;
-  message: string;
-};
+import { AppointmentForm } from '../../types/type';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { bookAppointment } from '../../redux/features/user/userSlice';
 
 export default function BookAppointment() {
+  const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<AppointmentForm>();
 
-  const onSubmit: SubmitHandler<AppointmentForm> = (data) => {
-    console.log('Appointment data:', data);
+  const onSubmit: SubmitHandler<AppointmentForm> = async (data) => {
+    try {
+      setLoading(true); // ✅ show loader
+      const result = await dispatch(bookAppointment(data));
+      const payload = result.payload as { message: string };
+      if (payload.message) {
+        toast.success(payload.message);
+        reset(); // ✅ reset form fields
+      }
+    } catch (error) {
+      toast.error(error as string);
+    } finally {
+      setLoading(false); // ✅ always hide loader
+    }
   };
 
   return (
@@ -34,9 +47,7 @@ export default function BookAppointment() {
           transition={{ duration: 0.6 }}
           className="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl shadow-xl p-8 sm:p-12 w-full max-w-md"
         >
-          <h2 className="text-3xl font-bold text-white text-center mb-6">
-            Book Appointment
-          </h2>
+          <h2 className="text-3xl font-bold text-white text-center mb-6">Book Appointment</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <input
@@ -90,9 +101,32 @@ export default function BookAppointment() {
 
             <button
               type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-md w-full transition duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-md w-full transition duration-300 flex items-center justify-center gap-2"
+              disabled={loading}
             >
-              Submit
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
           </form>
         </motion.div>

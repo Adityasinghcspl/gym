@@ -16,6 +16,8 @@ export const RESTServerRoute = {
 	REST_SIGNIN_USER: 'api/user/login',
 	REST_SIGNUP_USER: 'api/user/register',
 	REST_All_USERS: 'api/user',
+	REST_CONTACTUS: 'api/user/contact-us',
+	REST_BOOK_APPOINTMENT: 'api/user/appointment/book',
 	REST_USER: (id: string) => `api/user/${id}`,
 	REST_GET_USER: (id: string) => `api/user/${id}`,
 	REST_UPDATE_USER: (id: string) => `api/user/${id}`,
