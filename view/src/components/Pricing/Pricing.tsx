@@ -100,12 +100,12 @@ export default function Pricing() {
                 ))}
               </ul>
               {/* Enroll Button */}
-              <button
+              {/* <button
                 onClick={handleEnrollClick}
                 className="w-full text-center bg-gray-800 text-white py-3 font-bold uppercase rounded-md transition-all duration-300 hover:bg-orange-600 skew-y-[4deg]"
               >
                 Enroll Now
-              </button>
+              </button> */}
             </div>
           ))}
         </div>
