@@ -78,7 +78,7 @@ export default function DashboardRoutes() {
             }
           /> */}
           <Route
-            path="/calendar"
+            path="/"
             element={
               <>
                 <PageTitle title="Calendar | Admin Dashboard" />
