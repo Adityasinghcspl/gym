@@ -10,24 +10,20 @@ interface MemberShipModalProps {
 }
 
 const allFeatures = [
+  'Trainer',
   'Personal Trainer',
   'Diet Plan',
-  '24/7 Access',
   'Group Classes',
   'Locker Room Access',
-  'Sauna',
-  'Swimming Pool',
   'Online Consultation',
   'Cardio Equipment',
   'Strength Training',
+  'Yoga Sessions',
+  'Physical Therapy',
+  'Unlimited Equipments'
 ];
 
-export default function MemberShipModal({
-  open,
-  onClose,
-  onConfirm,
-  initialData,
-}: MemberShipModalProps) {
+export default function MemberShipModal({ open, onClose, onConfirm, initialData }: MemberShipModalProps) {
   const isEditMode = !!initialData && '_id' in initialData && initialData._id;
 
   const [formData, setFormData] = useState<Membership>({
@@ -68,10 +64,7 @@ export default function MemberShipModal({
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
             {isEditMode ? 'Edit' : 'Create'} Membership
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          >
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <MdClose size={24} />
           </button>
         </div>
@@ -83,9 +76,7 @@ export default function MemberShipModal({
             <select
               className="w-full border px-3 py-2 rounded dark:bg-meta-4 dark:text-white"
               value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value as Membership['type'] })
-              }
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as Membership['type'] })}
             >
               <option value="Monthly">Monthly</option>
               <option value="Quarterly">Quarterly</option>
@@ -100,9 +91,7 @@ export default function MemberShipModal({
             <input
               type="number"
               value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: parseFloat(e.target.value) })
-              }
+              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
               className="w-full border px-3 py-2 rounded dark:bg-meta-4 dark:text-white"
               required
             />
@@ -114,9 +103,7 @@ export default function MemberShipModal({
             <input
               type="number"
               value={formData.durationInMonths}
-              onChange={(e) =>
-                setFormData({ ...formData, durationInMonths: parseInt(e.target.value) })
-              }
+              onChange={(e) => setFormData({ ...formData, durationInMonths: parseInt(e.target.value) })}
               className="w-full border px-3 py-2 rounded dark:bg-meta-4 dark:text-white"
               required
             />
@@ -164,10 +151,7 @@ export default function MemberShipModal({
             </div>
           )}
 
-          <button
-            type="submit"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow"
-          >
+          <button type="submit" className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow">
             {isEditMode ? 'Update Membership' : 'Create Membership'}
           </button>
         </form>

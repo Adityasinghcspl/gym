@@ -57,9 +57,9 @@ export default function Service() {
                     <div className="w-full md:w-1/2 bg-[#252525] p-8 flex flex-col justify-center h-72 relative group-hover:bg-[#363636] transition">
                       <h4 className="text-white text-lg font-semibold mb-2">{service.title}</h4>
                       <p className="text-gray-300 text-sm mb-4">{service.description}</p>
-                      <a href="#" className="uppercase text-white font-bold text-sm hover:text-orange-500 transition">
+                      {/* <a href="#" className="uppercase text-white font-bold text-sm hover:text-orange-500 transition">
                         Explore
-                      </a>
+                      </a> */}
                       {/* Arrow Indicator */}
                       <div className="absolute w-5 h-5 bg-[#252525] rotate-45 transform top-1/2 -left-2 group-hover:bg-[#363636] transition" />
                     </div>
@@ -70,9 +70,9 @@ export default function Service() {
                     <div className="w-full md:w-1/2 bg-[#252525] p-8 flex flex-col justify-center h-72 relative group-hover:bg-[#363636] transition">
                       <h4 className="text-white text-lg font-semibold mb-2">{service.title}</h4>
                       <p className="text-gray-300 text-sm mb-4">{service.description}</p>
-                      <a href="#" className="uppercase text-white font-bold text-sm hover:text-orange-500 transition">
+                      {/* <a href="#" className="uppercase text-white font-bold text-sm hover:text-orange-500 transition">
                         Explore
-                      </a>
+                      </a> */}
                       {/* Arrow Indicator */}
                       <div className="absolute w-5 h-5 bg-[#252525] rotate-45 transform top-1/2 -right-2 group-hover:bg-[#363636] transition" />
                     </div>

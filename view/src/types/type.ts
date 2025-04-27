@@ -65,6 +65,9 @@ export interface User {
   role: Role;
   createdAt: string;
   updatedAt: string;
+  membershipId?: any;
+  membershipStartDate?: string;
+  membershipEndDate?: string;
 }
 
 export interface Membership {
@@ -111,3 +114,26 @@ export interface AttendanceState {
   attendanceList: AttendanceListState;
   attendance: AttendanceItemState;
 }
+
+export interface ContactFormInputs {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+};
+
+export interface AssignMemberShip {
+  id: string,
+  membershipId: string;
+  membershipStartDate: string;
+  membershipEndDate: string;
+};
+
+export type AppointmentForm = {
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  message: string;
+};

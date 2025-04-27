@@ -21,6 +21,7 @@ export default function SiteHeader(_props: {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(isAuthenticated());
   const [loginClicked, setLoginClicked] = useState<boolean>(false);
 
+  // Handle login/logout state and user info
   useEffect(() => {
     const handleAuthChange = () => {
       const auth = isAuthenticated();
@@ -30,6 +31,7 @@ export default function SiteHeader(_props: {
         setUser(userData);
       } else {
         setUser(null);
+        setLoginClicked(false);
       }
     };
 
@@ -39,7 +41,13 @@ export default function SiteHeader(_props: {
     return () => {
       window.removeEventListener('storage', handleAuthChange);
     };
-  }, []);
+  }, [pathname]);
+
+  // Close menus on navigation
+  useEffect(() => {
+    setMenuOpen(false);
+    setDropdownOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -55,56 +63,80 @@ export default function SiteHeader(_props: {
     navigate('/login');
   };
 
+  const handleLinkClick = () => {
+    setMenuOpen(false);
+    setDropdownOpen(false);
+  };
+
+  const isPagesActive = ['/bmi-calculator', '/exercise', '/class-timetable'].some((route) =>
+    pathname.startsWith(route),
+  );
+
   return (
     <header className="absolute left-0 top-0 w-full px-4 pt-14 z-50 bg-transparent">
       <div className="container mx-auto flex items-center justify-between relative">
         {/* Logo */}
         <div className="logo absolute left-4 lg:static">
-          <a href="#">
+          <Link to="#" onClick={handleLinkClick}>
             <img src="img/logo.png" alt="Logo" className="h-10" />
-          </a>
+          </Link>
         </div>
 
         {/* Centered Navigation */}
         <nav className="hidden lg:flex space-x-8 text-white text-sm font-semibold uppercase absolute left-1/2 transform -translate-x-1/2">
           <Link
             to="/"
+            onClick={handleLinkClick}
             className={`hover:text-orange-500 ${(pathname === '/' || pathname.includes('home')) && 'text-orange-500'}`}
           >
             Home
           </Link>
-          <Link to="/about-us" className={`hover:text-orange-500 ${pathname === '/about-us' && 'text-orange-500'}`}>
+          <Link
+            to="/about-us"
+            onClick={handleLinkClick}
+            className={`hover:text-orange-500 ${pathname === '/about-us' && 'text-orange-500'}`}
+          >
             About Us
           </Link>
-          <Link to="/services" className={`hover:text-orange-500 ${pathname === '/services' && 'text-orange-500'}`}>
+          <Link
+            to="/services"
+            onClick={handleLinkClick}
+            className={`hover:text-orange-500 ${pathname === '/services' && 'text-orange-500'}`}
+          >
             Services
           </Link>
-          <Link to="/our-team" className={`hover:text-orange-500 ${pathname === '/our-team' && 'text-orange-500'}`}>
+          <Link
+            to="/our-team"
+            onClick={handleLinkClick}
+            className={`hover:text-orange-500 ${pathname === '/our-team' && 'text-orange-500'}`}
+          >
             Our Team
           </Link>
-          {isAuthorized && user ? (
+
+          {/* Pages Dropdown */}
+          {isAuthorized && user && (
             <div className="relative group">
-              <button className="hover:text-orange-500 uppercase">Pages</button>
-              <div className="absolute left-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white w-44 p-3 rounded-lg z-50">
-                <a href="./class-timetable.html" className="block py-1 hover:text-orange-500">
-                  Classes timetable
-                </a>
-                <a href="./bmi-calculator.html" className="block py-1 hover:text-orange-500">
+              <button className={`uppercase ${isPagesActive ? 'text-orange-500' : 'hover:text-orange-500'}`}>
+                Pages
+              </button>
+              <div className="absolute left-0 top-full mt-2 bg-gray-900 text-white w-44 p-3 rounded-lg z-50 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-300">
+                {/* <Link to="/class-timetable" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
+                  Classes Timetable
+                </Link> */}
+                <Link to="/bmi-calculator" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
                   BMI Calculator
-                </a>
-                <a href="./gallery.html" className="block py-1 hover:text-orange-500">
-                  Gallery
-                </a>
-                <a href="./blog.html" className="block py-1 hover:text-orange-500">
-                  Our Blog
-                </a>
-                <a href="./404.html" className="block py-1 hover:text-orange-500">
-                  404
-                </a>
+                </Link>
+                <Link to="/exercise" onClick={handleLinkClick} className="block py-1 hover:text-orange-500">
+                  Exercise
+                </Link>
               </div>
             </div>
-          ) : null}
-          <Link to="/contact-us" className={`hover:text-orange-500 ${pathname === '/contact-us' && 'text-orange-500'}`}>
+          )}
+          <Link
+            to="/contact-us"
+            onClick={handleLinkClick}
+            className={`hover:text-orange-500 ${pathname === '/contact-us' && 'text-orange-500'}`}
+          >
             Contact
           </Link>
         </nav>
@@ -148,22 +180,28 @@ export default function SiteHeader(_props: {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="lg:hidden absolute top-16 left-0 w-full bg-gray-900 text-white p-4 z-40">
-          <Link to="/" className="block py-2">
+          <Link to="/" onClick={handleLinkClick} className="block py-2">
             Home
           </Link>
-          <Link to="/about-us" className="block py-2">
+          <Link to="/about-us" onClick={handleLinkClick} className="block py-2">
             About Us
           </Link>
-          <Link to="/class-details" className="block py-2">
-            Classes
-          </Link>
-          <Link to="/services" className="block py-2">
+          {/* <Link to="/class-timetable" onClick={handleLinkClick} className="block py-2">
+            Classes Timetable
+          </Link> */}
+          <Link to="/services" onClick={handleLinkClick} className="block py-2">
             Services
           </Link>
-          <Link to="/our-team" className="block py-2">
+          <Link to="/our-team" onClick={handleLinkClick} className="block py-2">
             Our Team
           </Link>
-          <Link to="/contact-us" className="block py-2">
+          <Link to="/bmi-calculator" onClick={handleLinkClick} className="block py-2">
+            BMI Calculator
+          </Link>
+          <Link to="/exercise" onClick={handleLinkClick} className="block py-2">
+            Exercise
+          </Link>
+          <Link to="/contact-us" onClick={handleLinkClick} className="block py-2">
             Contact
           </Link>
         </div>

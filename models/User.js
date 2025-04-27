@@ -33,6 +33,12 @@ const userSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Membership",
       default: null
+    },
+    membershipStartDate: {
+      type: Date
+    },
+    membershipEndDate: {
+      type: Date
     }
   },
   {

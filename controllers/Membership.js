@@ -19,7 +19,7 @@ export const createMembership = async (req, res) => {
 // Get all memberships
 export const getAllMemberships = async (req, res) => {
   try {
-    const memberships = await Membership.find();
+    const memberships = await Membership.find().sort({ durationInMonths: 1 });
     res.status(200).json(memberships);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch memberships", error: err.message });

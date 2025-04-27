@@ -41,7 +41,11 @@ const getAllUsers = async (req, res) => {
     // Fetch all users and sort by name
     const users = await User.find()
       .sort({ name: 1 })
-      .select('_id name email phone_no address createdAt updatedAt');
+      .select('_id name email phone_no address createdAt updatedAt membershipId membershipStartDate membershipEndDate')
+      .populate({
+        path: 'membershipId',   // field to populate
+        select: 'type price durationInMonths',  // fields from Membership you want
+      });
     res.status(200).json(users);
   } catch (err) {
     // Handle any errors that occur during the database operation
@@ -169,6 +173,27 @@ const updateUserByAdmin = async (req, res) => {
   }
 };
 
+//@desc Update user data through admin (excluding password)
+//@route PATCH /api/user/:id
+//@access private (admin only)
+const assignMemberShipByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { membershipId, membershipStartDate, membershipEndDate } = req.body;
+    if (!membershipId || !membershipStartDate || !membershipEndDate) {
+      return res.status(404).json({ message: "Please send valid data" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "Membership assigned successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 //@desc Update user password through admin
 //@route PATCH /api/user/:id/password
@@ -185,7 +210,7 @@ const updateUserPasswordByAdmin = async (req, res) => {
 
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
-    
+
     res.status(200).json({ message: "User password updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "An error occurred while updating user password" });
@@ -250,4 +275,83 @@ const resetUserPassword = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword };
+//@desc user send contact-us email
+//@route POST /api/user/contactUs
+//@access public
+const contactUs = async (req, res) => {
+  try {
+    // Full schema validation
+    const schema = Joi.object({
+      firstName: Joi.string().min(2).max(50).required(),
+      lastName: Joi.string().min(2).max(50).required(),
+      email: Joi.string().email().required(),
+      subject: Joi.string().min(5).max(100).required(),
+      message: Joi.string().min(10).required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const { firstName, lastName, email, subject, message } = req.body;
+
+
+    // ✅ build the plain text message
+    const textMessage = `
+      New Contact Us Message:
+      Name: ${firstName} ${lastName}
+      Email: ${email}
+      Subject: ${subject}
+      Message: ${message}
+    `;
+
+    // ✅ now call sendEmail properly
+    await sendEmail(process.env.ADMIN_EMAIL, `Contact Us: ${subject}`, textMessage);
+
+    res.status(200).json({ message: 'Your message has been sent successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while sending the message.' });
+  }
+};
+
+//@desc user book the appointment
+//@route POST /api/user/appointment/book
+//@access public
+const appointment = async (req, res) => {
+  try {
+    // Full schema validation
+    const schema = Joi.object({
+      name: Joi.string().required(),
+      email: Joi.string().email().required(),
+      phone: Joi.string().required(),
+      date: Joi.string().required(),
+      message: Joi.string().required(),
+    });
+
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const { name, email, phone, date, message } = req.body;
+
+
+    // ✅ build the plain text message
+    const textMessage = `
+      New Appointment Request
+      Name: ${name}
+      Email: ${email}
+      Phone: ${phone}
+      Date: ${date}
+      Message: ${message}
+      `;
+
+    // ✅ now call sendEmail properly
+    await sendEmail(process.env.ADMIN_EMAIL, "New Appointment Request", textMessage);
+    res.status(200).json({ message: "Appointment request sent successfully!" });
+  } catch (error) {
+    console.error("Appointment error:", error);
+    res.status(500).json({ message: "Something went wrong while sending the appointment request." });
+  }
+};
+
+export { registerUser, loginUser, contactUs, appointment, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, assignMemberShipByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword };
