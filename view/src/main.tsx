@@ -6,7 +6,6 @@ import App from './App';
 import './css/style.css';
 import './css/flaticon.css';
 import './css/satoshi.css';
-import 'jsvectormap/dist/css/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
