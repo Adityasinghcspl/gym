@@ -24,12 +24,8 @@ export const getAllMemberships = createAsyncThunk<Membership[], void>(
   "membership/getAllMemberships",
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) throw new Error("No access token found");
-
       const data = await RestClientBuilder.instance()
         .withBaseUrl(config.API_REST_ENDPOINT)
-        .withHeader("Authorization", token)
         .build()
         .get<Membership[]>(RESTServerRoute.REST_All_MEMBERSHIPS);
 
