@@ -55,6 +55,7 @@ const validateTrainer = (data) => {
         "number.max": "Phone number must be exactly 10 digits",
       }),
     password: Joi.string().min(6).required(),
+    retype_password: Joi.string().min(6).required(),
     role: Joi.string().valid("admin", "trainer", "assistant"),
     bio: Joi.string().max(500).allow(""),
   });
