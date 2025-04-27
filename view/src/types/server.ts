@@ -21,6 +21,7 @@ export const RESTServerRoute = {
 	REST_USER: (id: string) => `api/user/${id}`,
 	REST_GET_USER: (id: string) => `api/user/${id}`,
 	REST_UPDATE_USER: (id: string) => `api/user/${id}`,
+	REST_ASSIGN_MEMBERSHIP_USER: (id: string) => `api/user/assign_membership/${id}`,
 	REST_DELETE_USER: (id: string) => `api/user/${id}`,
 	REST_SEND_RESET_PASSWORD_LINK_USER: '/api/user/password-reset',
 	REST_RESET_PASSWORD_USER: (id: string, token: string) => `/api/user/password-reset/${id}/${token}`,

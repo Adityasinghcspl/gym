@@ -68,7 +68,7 @@ export default function DashboardRoutes() {
     <>
       <DefaultLayout>
         <Routes>
-          <Route
+          {/* <Route
             path="/"
             element={
               <>
@@ -76,7 +76,7 @@ export default function DashboardRoutes() {
                 <ECommerce />
               </>
             }
-          />
+          /> */}
           <Route
             path="/calendar"
             element={

@@ -3,7 +3,7 @@ import { RestClientBuilder } from "../../../utils/RestClient";
 import { RESTServerRoute } from "../../../types/server";
 import { UserState } from "../../../types/slice";
 import config from "../../../config/config";
-import { AppointmentForm, ContactFormInputs, User } from "../../../types/type";
+import { AppointmentForm, AssignMemberShip, ContactFormInputs, User } from "../../../types/type";
 import { logout } from "../auth/authSlice";
 
 const initialState: UserState = {
@@ -133,6 +133,31 @@ export const updateUserPassword = createAsyncThunk<any, { id: string; newPasswor
         .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
         .build()
         .patch<any>(RESTServerRoute.REST_UPDATE_PASSWORD_USER(id), newPassword);
+      return data; // Return the data retrieved
+    } catch (error: any) {
+      if (error.status === 401) {
+        dispatch(logout()); // Call logout action
+      }
+      // Ensure error handling provides meaningful feedback
+      const errorMessage = error?.response?.data?.message || 'An error occurred while updating the user.';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+// Define an async thunk for update user
+export const assignMemberShipToUser = createAsyncThunk<any, AssignMemberShip>(
+  'user/assignMemberShipToUser',
+  async (membershipData, { rejectWithValue, dispatch }) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) throw new Error('No access token found');
+      // Build the RestClient with the necessary configuration
+      const data = await RestClientBuilder.instance()
+        .withBaseUrl(config.API_REST_ENDPOINT)
+        .withHeader('Authorization', token) // Ensure Authorization header uses the "Bearer" token format
+        .build()
+        .patch<any>(RESTServerRoute.REST_ASSIGN_MEMBERSHIP_USER(membershipData.id), membershipData);
       return data; // Return the data retrieved
     } catch (error: any) {
       if (error.status === 401) {

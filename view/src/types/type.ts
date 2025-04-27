@@ -65,6 +65,9 @@ export interface User {
   role: Role;
   createdAt: string;
   updatedAt: string;
+  membershipId?: any;
+  membershipStartDate?: string;
+  membershipEndDate?: string;
 }
 
 export interface Membership {
@@ -118,6 +121,13 @@ export interface ContactFormInputs {
   email: string;
   subject: string;
   message: string;
+};
+
+export interface AssignMemberShip {
+  id: string,
+  membershipId: string;
+  membershipStartDate: string;
+  membershipEndDate: string;
 };
 
 export type AppointmentForm = {
