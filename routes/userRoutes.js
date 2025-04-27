@@ -1,6 +1,6 @@
 import express from 'express';
 import { authorizeAdmin, validateToken } from '../middleware/validateTokenHandler.js';
-import { registerUser, contactUs, appointment, currentUser, loginUser, getAllUsers, getUser, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword } from '../controllers/User.js';
+import { registerUser, contactUs, appointment, currentUser, loginUser, getAllUsers, getUser, deleteUser, updateUserByAdmin, assignMemberShipByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword } from '../controllers/User.js';
 
 const router = express.Router();
 
@@ -25,6 +25,7 @@ router.post("/appointment/book", appointment);
 router.get("/:id", validateToken, getUser);
 router.delete("/:id", validateToken, authorizeAdmin, deleteUser);
 router.patch("/:id", validateToken, authorizeAdmin, updateUserByAdmin);
+router.patch("/assign_membership/:id", validateToken, assignMemberShipByAdmin);
 router.patch("/update/password/:id", validateToken, authorizeAdmin, updateUserPasswordByAdmin);
 
 export default router;

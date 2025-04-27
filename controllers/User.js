@@ -41,7 +41,11 @@ const getAllUsers = async (req, res) => {
     // Fetch all users and sort by name
     const users = await User.find()
       .sort({ name: 1 })
-      .select('_id name email phone_no address createdAt updatedAt');
+      .select('_id name email phone_no address createdAt updatedAt membershipId membershipStartDate membershipEndDate')
+      .populate({
+        path: 'membershipId',   // field to populate
+        select: 'type price durationInMonths',  // fields from Membership you want
+      });
     res.status(200).json(users);
   } catch (err) {
     // Handle any errors that occur during the database operation
@@ -166,6 +170,27 @@ const updateUserByAdmin = async (req, res) => {
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "An error occurred while updating the user" });
+  }
+};
+
+//@desc Update user data through admin (excluding password)
+//@route PATCH /api/user/:id
+//@access private (admin only)
+const assignMemberShipByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { membershipId, membershipStartDate, membershipEndDate } = req.body;
+    if (!membershipId || !membershipStartDate || !membershipEndDate) {
+      return res.status(404).json({ message: "Please send valid data" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "Membership assigned successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -329,4 +354,4 @@ const appointment = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, contactUs, appointment, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword };
+export { registerUser, loginUser, contactUs, appointment, currentUser, getUser, getAllUsers, deleteUser, updateUserByAdmin, assignMemberShipByAdmin, updateUserPasswordByAdmin, requestUserPasswordReset, resetUserPassword };
